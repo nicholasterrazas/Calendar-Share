@@ -12,8 +12,8 @@ dayjs.extend(isBetweenPlugin);
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) =>
-    prop !== 'dayIsBetween' && prop !== 'isFirstDay' && prop !== 'isLastDay',
-})(({ theme, dayIsBetween, isFirstDay, isLastDay }) => ({
+    prop !== 'dayIsBetween'
+})(({ theme, dayIsBetween }) => ({
   ...(dayIsBetween && {
     borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
@@ -22,18 +22,10 @@ const CustomPickersDay = styled(PickersDay, {
       backgroundColor: theme.palette.primary.dark,
     },
   }),
-  ...(isFirstDay && {
-    borderTopLeftRadius: '50%',
-    borderBottomLeftRadius: '50%',
-  }),
-  ...(isLastDay && {
-    borderTopRightRadius: '50%',
-    borderBottomRightRadius: '50%',
-  }),
 }));
 
 function Day(props) {
-  const { day, selectedDay, ...other } = props;
+  const { day, selectedDay, setSelectedDays, ...other } = props;
 
   if (selectedDay == null) {
     return <PickersDay day={day} {...other} />;
@@ -43,8 +35,6 @@ function Day(props) {
   const end = selectedDay.endOf('week');
 
   const dayIsBetween = day.isBetween(start, end, null, '[]');
-  const isFirstDay = day.isSame(start, 'day');
-  const isLastDay = day.isSame(end, 'day');
 
   return (
     <CustomPickersDay
@@ -52,8 +42,6 @@ function Day(props) {
       day={day}
       sx={dayIsBetween ? { px: 2.5, mx: 0 } : {}}
       dayIsBetween={dayIsBetween}
-      isFirstDay={isFirstDay}
-      isLastDay={isLastDay}
     />
   );
 }
@@ -67,14 +55,14 @@ Day.propTypes = {
 };
 
 export default function Calendar() {
-  const [value, setValue] = React.useState(dayjs('2022-04-17'));
+  const [value, setValue] = React.useState(dayjs('2022-05-06'));
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateCalendar
         showDaysOutsideCurrentMonth 
         value={value}
-        onChange={(newValue) => setValue(newValue)}
+        onChange={(newValue) => {setValue(newValue); console.log(newValue)}}
         slots={{ day: Day }}
         slotProps={{
           day: {
