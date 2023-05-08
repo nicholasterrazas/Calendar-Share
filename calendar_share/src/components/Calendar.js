@@ -12,9 +12,9 @@ dayjs.extend(isBetweenPlugin);
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) =>
-    prop !== 'dayIsBetween'
-})(({ theme, dayIsBetween }) => ({
-  ...(dayIsBetween && {
+    prop !== 'dayIsSelected'
+})(({ theme, dayIsSelected }) => ({
+  ...(dayIsSelected && {
     borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
@@ -27,6 +27,22 @@ const CustomPickersDay = styled(PickersDay, {
 
 const dayList = [];
 
+function toggleDays(newValue){
+  console.log(newValue);
+
+  // find item in list and remove it if it exists 
+  const index = dayList.findIndex((d) => newValue.isSame(d, 'day'));
+  console.log('index: ' + index);
+  if (index !== -1){
+    dayList.splice(index, 1);
+  }
+  else{
+    dayList.push(newValue);   
+  }
+  
+  console.log(dayList);
+}
+
 function Day(props) {
   const { day, selectedDay, setSelectedDays, ...other } = props;
 
@@ -34,15 +50,14 @@ function Day(props) {
     return <PickersDay day={day} {...other} />;
   }
 
-  const dayIsBetween = dayList.some((d) => day.isSame(d, 'day'));
-  // console.log('current day: ' + day +', selected day: ' + selectedDay + ', equal = '+dayIsBetween );
+  const dayIsSelected = dayList.some((d) => day.isSame(d, 'day'));
 
   return (
     <CustomPickersDay
       {...other}
       day={day}
-      sx={dayIsBetween ? { px: 2.5, mx: 0 } : {}}
-      dayIsBetween={dayIsBetween}
+      sx={dayIsSelected ? { px: 2.5, mx: 0 } : {}}
+      dayIsSelected={dayIsSelected}
     />
   );
 }
@@ -65,9 +80,7 @@ export default function Calendar() {
         value={value}
         onChange={(newValue) => {
           setValue(newValue); 
-          console.log(newValue); 
-          dayList.push(newValue);   
-          console.log(dayList);
+          toggleDays(newValue);
         }}
         slots={{ day: Day }}
         slotProps={{
