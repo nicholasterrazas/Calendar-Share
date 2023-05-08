@@ -24,6 +24,9 @@ const CustomPickersDay = styled(PickersDay, {
   }),
 }));
 
+
+const dayList = [];
+
 function Day(props) {
   const { day, selectedDay, setSelectedDays, ...other } = props;
 
@@ -31,10 +34,8 @@ function Day(props) {
     return <PickersDay day={day} {...other} />;
   }
 
-  const start = selectedDay.startOf('week');
-  const end = selectedDay.endOf('week');
-
-  const dayIsBetween = day.isBetween(start, end, null, '[]');
+  const dayIsBetween = dayList.some((d) => day.isSame(d, 'day'));
+  // console.log('current day: ' + day +', selected day: ' + selectedDay + ', equal = '+dayIsBetween );
 
   return (
     <CustomPickersDay
@@ -62,7 +63,12 @@ export default function Calendar() {
       <DateCalendar
         showDaysOutsideCurrentMonth 
         value={value}
-        onChange={(newValue) => {setValue(newValue); console.log(newValue)}}
+        onChange={(newValue) => {
+          setValue(newValue); 
+          console.log(newValue); 
+          dayList.push(newValue);   
+          console.log(dayList);
+        }}
         slots={{ day: Day }}
         slotProps={{
           day: {
