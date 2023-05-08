@@ -105,8 +105,9 @@ export default function Calendar() {
           onMouseUp={handleMouseUp}
         >
           <DateCalendar
+            disableHighlightToday
             showDaysOutsideCurrentMonth
-            value={value}
+            value={null}  // might need to be value={value}?
             onChange={(newValue) => {
               setValue(newValue);
               toggleDays(newValue);
@@ -129,9 +130,11 @@ export default function Calendar() {
           variant="outlined" 
           endIcon={<DeleteIcon />}
           onClick={() => {
-            console.log('Clearing calendar');
+            console.log('Clearing calendar: ');
+            console.log(dayList);
             setDayList([]);
-          }}  
+          }}
+          disabled={!dayList.length}  
         >
           Clear Calendar
         </Button>
@@ -139,41 +142,33 @@ export default function Calendar() {
           variant="contained" 
           endIcon={<Save />}
           onClick={() => {
-            console.log('Saving calendar: ' + dayList);
+            console.log('Saving calendar: ');
+            console.log(dayList);
             setStableList(dayList);
           }}
         >
           Save Calendar
         </Button>
-        {
-          stableList.length ? (
-            <Button 
-              variant="outlined" 
-              endIcon={<Refresh />}
-              onClick={() => {
-                console.log('Restoring calendar: ' + stableList);
-                setDayList(stableList);
-              }}
-            >
-              Restore Calendar
-            </Button>
-          ) : (
-            <Button 
-              variant="outlined" 
-              endIcon={<Refresh />}
-              disabled
-            >
-              Restore Calendar
-            </Button>
-          )
-        }
+        <Button
+          variant="outlined"
+          endIcon={<Refresh />}
+          onClick={() => {
+            console.log('Restoring calendar: ');
+            console.log(stableList);
+            setDayList(stableList);
+          }}
+          disabled={!stableList.length}
+        >
+          Restore Calendar
+        </Button>
+
         
         
         
         
       </Stack>
       
-      <p>Currently selected days: {dayList.length > 0 ? dayList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format('YYYY-MM-DD')).join(', ') : 'None'}</p>
+      <p>Currently selected days: {dayList.length ? dayList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format('YYYY-MM-DD')).join(', ') : 'None'}</p>
 
       <p>Saved days: {stableList.length ? stableList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format("MM/DD/YYYY")).join(", ") : 'No saved days'}</p>
 
