@@ -7,6 +7,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { Button } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Stack from '@mui/material/Stack';
+import { Refresh, Save } from '@mui/icons-material';
 
 dayjs.extend(isBetweenPlugin);
 
@@ -65,7 +69,7 @@ export default function Calendar() {
   const [value, setValue] = React.useState(dayjs('2023-05-06'));
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const [dayList, setDayList] = React.useState([]);
-
+  const [stableList, setStableList] = React.useState([])
 
   function toggleDays(newValue){
     console.log(newValue);
@@ -92,29 +96,89 @@ export default function Calendar() {
     setIsMouseDown(false);
   };
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-      >
-        <DateCalendar
-          showDaysOutsideCurrentMonth
-          value={value}
-          onChange={(newValue) => {
-            setValue(newValue);
-            toggleDays(newValue);
+    <div className='calendar_page'>
+      <h1>Select Days:</h1>
+
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <div className='calendar'
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+        >
+          <DateCalendar
+            showDaysOutsideCurrentMonth
+            value={value}
+            onChange={(newValue) => {
+              setValue(newValue);
+              toggleDays(newValue);
+            }}
+            slots={{ day: Day }}
+            slotProps={{
+              day: {
+                selectedDay: value,
+                dayList,
+                isMouseDown,
+                toggleDays,
+              },
+            }}
+          />
+        </div>
+      </LocalizationProvider>
+
+      <Stack direction="row" spacing={2} justifyContent="center">
+        <Button 
+          variant="outlined" 
+          endIcon={<DeleteIcon />}
+          onClick={() => {
+            console.log('Clearing calendar');
+            setDayList([]);
+          }}  
+        >
+          Clear Calendar
+        </Button>
+        <Button 
+          variant="contained" 
+          endIcon={<Save />}
+          onClick={() => {
+            console.log('Saving calendar: ' + dayList);
+            setStableList(dayList);
           }}
-          slots={{ day: Day }}
-          slotProps={{
-            day: {
-              selectedDay: value,
-              dayList,
-              isMouseDown,
-              toggleDays,
-            },
-          }}
-        />
-      </div>
-    </LocalizationProvider>
+        >
+          Save Calendar
+        </Button>
+        {
+          stableList.length ? (
+            <Button 
+              variant="outlined" 
+              endIcon={<Refresh />}
+              onClick={() => {
+                console.log('Restoring calendar: ' + stableList);
+                setDayList(stableList);
+              }}
+            >
+              Restore Calendar
+            </Button>
+          ) : (
+            <Button 
+              variant="outlined" 
+              endIcon={<Refresh />}
+              disabled
+            >
+              Restore Calendar
+            </Button>
+          )
+        }
+        
+        
+        
+        
+      </Stack>
+      
+      <p>Currently selected days: {dayList.length > 0 ? dayList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format('YYYY-MM-DD')).join(', ') : 'None'}</p>
+
+      <p>Saved days: {stableList.length ? stableList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format("MM/DD/YYYY")).join(", ") : 'No saved days'}</p>
+
+
+
+    </div>
   );
 }
