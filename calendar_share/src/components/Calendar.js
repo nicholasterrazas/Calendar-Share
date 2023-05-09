@@ -72,6 +72,33 @@ Day.propTypes = {
   selectedDay: PropTypes.object,
 };
 
+
+function groupAdjacentDays(dayList) {
+  let groups = [];
+  let start = dayList[0];
+  let end = dayList[0];
+  for (let i = 1; i < dayList.length; i++) {
+    if (dayjs(dayList[i]).diff(dayjs(end), 'day') === 1) {
+      end = dayList[i];
+    } else {
+      if (start !== end) {
+        groups.push(`${dayjs(start).format('MM/DD/YY')} - ${dayjs(end).format('MM/DD/YY')}`);
+      } else {
+        groups.push(dayjs(start).format('MM/DD/YY'));
+      }
+      start = dayList[i];
+      end = dayList[i];
+    }
+  }
+  if (start !== end) {
+    groups.push(`${dayjs(start).format('MM/DD/YY')} - ${dayjs(end).format('MM/DD/YY')}`);
+  } else {
+    groups.push(dayjs(start).format('MM/DD/YY'));
+  }
+  return groups;
+}
+
+
 export default function Calendar() {
   const [value, setValue] = React.useState(dayjs('2023-05-06'));
   const [isMouseDown, setIsMouseDown] = React.useState(false);
@@ -81,19 +108,20 @@ export default function Calendar() {
   function toggleDays(newValue){
     console.log(newValue);
 
-    // find item in list and remove it if it exists 
+    // find item in list and remove it if it exists, otherwise add the new item, and ensure that the list is sorted
     const index = dayList.findIndex((d) => newValue.isSame(d, 'day'));
     console.log('index: ' + index);
     if (index !== -1) {
       const newList = [...dayList];
       newList.splice(index, 1);
-      setDayList(newList);
+      setDayList(newList.sort((a, b) => (a.isAfter(b) ? 1 : -1)));
     } else {
-      setDayList([...dayList, newValue]);
+      setDayList(prevDayList => [...prevDayList, newValue].sort((a, b) => (a.isAfter(b) ? 1 : -1)));
     }
     
     console.log(dayList);
   }
+
 
   const handleMouseDown = () => {
     // console.log('mouse down');
@@ -169,17 +197,13 @@ export default function Calendar() {
           disabled={!stableList.length}
         >
           Restore Calendar
-        </Button>
-
-        
-        
-        
-        
+        </Button>  
       </Stack>
-      
-      <p>Currently selected days: {dayList.length ? dayList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format('YYYY-MM-DD')).join(', ') : 'None'}</p>
+      <div className='calendar list text display'>
+        <p>Currently selected days: {dayList.length ? groupAdjacentDays(dayList).join(', ') : 'None'}</p>
+        <p>Saved days: {stableList.length ? groupAdjacentDays(stableList).join(", ") : 'No saved days'}</p>
+      </div>
 
-      <p>Saved days: {stableList.length ? stableList.sort((a, b) => (a.isAfter(b) ? 1 : -1)).map(day => day.format("MM/DD/YYYY")).join(", ") : 'No saved days'}</p>
 
 
 
