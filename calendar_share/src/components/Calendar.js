@@ -46,6 +46,12 @@ function Day(props) {
     }
   };
 
+  const handleMouseDown = () => {
+    // console.log('day is clicked!');
+    // console.log(day);
+    toggleDays(day);
+  }
+
   return (
     <CustomPickersDay
       {...other}
@@ -53,6 +59,7 @@ function Day(props) {
       sx={dayIsSelected ? { px: 2.5, mx: 0 } : {}}
       dayIsSelected={dayIsSelected}
       onMouseOver={handleMouseOver}
+      onMouseDown={handleMouseDown}
     />
   );
 }
@@ -89,10 +96,12 @@ export default function Calendar() {
   }
 
   const handleMouseDown = () => {
+    // console.log('mouse down');
     setIsMouseDown(true);
   };
   
   const handleMouseUp = () => {
+    // console.log('mouse up');
     setIsMouseDown(false);
   };
   return (
@@ -109,8 +118,8 @@ export default function Calendar() {
             showDaysOutsideCurrentMonth
             value={null}  // might need to be value={value}?
             onChange={(newValue) => {
-              setValue(newValue);
-              toggleDays(newValue);
+                // console.log('onchange triggered!!')
+                setValue(newValue);
             }}
             slots={{ day: Day }}
             slotProps={{
