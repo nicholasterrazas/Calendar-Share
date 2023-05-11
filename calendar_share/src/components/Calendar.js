@@ -1,4 +1,5 @@
 import * as React from 'react';
+import './Calendar.css';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
@@ -17,7 +18,7 @@ const CustomPickersDay = styled(PickersDay, {
 })(({ theme, dayIsSelected, isDragging }) => ({
   ...(dayIsSelected && !isDragging && {
     borderRadius: 0,
-    backgroundColor: theme.palette.primary.main,
+    background: `linear-gradient(to top, ${theme.palette.primary.main} 80%, ${theme.palette.common.black} 50% )`,
     color: theme.palette.common.white,
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
