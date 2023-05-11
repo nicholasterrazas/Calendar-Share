@@ -194,7 +194,7 @@ export default function Calendar() {
             console.log(stableList);
             setDayList(stableList);
           }}
-          disabled={!stableList.length}
+          disabled={!stableList.length || stableList === dayList}
         >
           Restore Calendar
         </Button>  
