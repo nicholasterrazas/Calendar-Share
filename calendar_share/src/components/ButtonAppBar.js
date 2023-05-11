@@ -28,7 +28,7 @@ export default function MenuAppBar() {
   };
 
   const handleProfile = (event) => {
-    setAnchorEl(event.currentTarget);
+    setProfileEl(event.currentTarget);
   };
 
   const handleProfileClose = () => {
@@ -40,9 +40,10 @@ export default function MenuAppBar() {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then(() => {
+      .then((result) => {
         setAuth(true);
-
+        const user = result.user;
+        console.log(user);
       })
       .catch((error) => {
         console.error(error);

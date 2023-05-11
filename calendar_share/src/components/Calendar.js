@@ -7,10 +7,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { Button } from '@mui/material';
+import { Button, Divider } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Stack from '@mui/material/Stack';
 import { Refresh, Save } from '@mui/icons-material';
+import CalendarList from './CalendarLists';
 
 
 const CustomPickersDay = styled(PickersDay, {
@@ -74,6 +75,9 @@ Day.propTypes = {
 
 function groupAdjacentDays(dayList) {
   let groups = [];
+  if (!dayList.length){
+    return groups;
+  }
   let start = dayList[0];
   let end = dayList[0];
   for (let i = 1; i < dayList.length; i++) {
@@ -132,13 +136,13 @@ export default function Calendar() {
     setIsMouseDown(false);
   };
   return (
-    <div className='calendar_page'>
+    <div className='calendar_page'
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+    >
       <h1>Select Days:</h1>
       
-      <div className='calendar'
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-      >
+      <div className='calendar'>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             disableHighlightToday
@@ -182,6 +186,7 @@ export default function Calendar() {
             console.log(dayList);
             setStableList(dayList);
           }}
+          disabled={(stableList === dayList) || (stableList.length === 0 && dayList.length === 0)}
         >
           Save Calendar
         </Button>
@@ -198,10 +203,17 @@ export default function Calendar() {
           Restore Calendar
         </Button>  
       </Stack>
-
-      <div className='calendar list text display'>
-        <p>Currently selected days: {dayList.length ? groupAdjacentDays(dayList).join(', ') : 'None'}</p>
-        <p>Saved days: {stableList.length ? groupAdjacentDays(stableList).join(", ") : 'No saved days'}</p>
+      
+      <div className='day_lists' style={{ width: '50%' }}>
+        <Stack 
+          direction="row"
+          justifyContent="center"
+          spacing={0}
+          divider={<Divider orientation="vertical" flexItem />}
+        >
+          <CalendarList title="Currently selected days:" items={groupAdjacentDays(dayList)} />
+          <CalendarList title="Saved days:" items={groupAdjacentDays(stableList)} />
+        </Stack>
       </div>
 
     </div>
