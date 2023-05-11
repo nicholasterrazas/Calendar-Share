@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import isBetweenPlugin from 'dayjs/plugin/isBetween';
 import { styled } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -12,7 +11,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Stack from '@mui/material/Stack';
 import { Refresh, Save } from '@mui/icons-material';
 
-dayjs.extend(isBetweenPlugin);
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
@@ -82,18 +80,18 @@ function groupAdjacentDays(dayList) {
       end = dayList[i];
     } else {
       if (start !== end) {
-        groups.push(`${dayjs(start).format('MM/DD/YY')} - ${dayjs(end).format('MM/DD/YY')}`);
+        groups.push(`${dayjs(start).format('LL')} - ${dayjs(end).format('LL')}`);
       } else {
-        groups.push(dayjs(start).format('MM/DD/YY'));
+        groups.push(dayjs(start).format('LL'));
       }
       start = dayList[i];
       end = dayList[i];
     }
   }
   if (start !== end) {
-    groups.push(`${dayjs(start).format('MM/DD/YY')} - ${dayjs(end).format('MM/DD/YY')}`);
+    groups.push(`${dayjs(start).format('LL')} - ${dayjs(end).format('LL')}`);
   } else {
-    groups.push(dayjs(start).format('MM/DD/YY'));
+    groups.push(dayjs(start).format('LL'));
   }
   return groups;
 }
@@ -135,12 +133,12 @@ export default function Calendar() {
   return (
     <div className='calendar_page'>
       <h1>Select Days:</h1>
-
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div className='calendar'
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-        >
+      
+      <div className='calendar'
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+      >
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             disableHighlightToday
             showDaysOutsideCurrentMonth
@@ -159,8 +157,8 @@ export default function Calendar() {
               },
             }}
           />
-        </div>
-      </LocalizationProvider>
+        </LocalizationProvider>
+      </div>
 
       <Stack direction="row" spacing={2} justifyContent="center">
         <Button 
@@ -199,13 +197,11 @@ export default function Calendar() {
           Restore Calendar
         </Button>  
       </Stack>
+
       <div className='calendar list text display'>
         <p>Currently selected days: {dayList.length ? groupAdjacentDays(dayList).join(', ') : 'None'}</p>
         <p>Saved days: {stableList.length ? groupAdjacentDays(stableList).join(", ") : 'No saved days'}</p>
       </div>
-
-
-
 
     </div>
   );
