@@ -19,7 +19,7 @@ const CustomPickersDay = styled(PickersDay, {
 })(({ theme, dayIsSelected, isDragging }) => ({
   ...(dayIsSelected && !isDragging && {
     borderRadius: 0,
-    background: `linear-gradient(to top, ${theme.palette.primary.main} 80%, ${theme.palette.common.black} 50% )`,
+    background: `linear-gradient(to top, ${theme.palette.primary.light} 80%, ${theme.palette.primary.main} 50% )`,
     color: theme.palette.common.white,
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
@@ -36,7 +36,7 @@ function Day(props) {
   const dayIsSelected = dayList.some((d) => day.isSame(d, 'day'));
 
   if (selectedDay == null) {
-    return <PickersDay day={day} {...other} />;
+    return <PickersDay day={day} sx={{ px: 2.5, mx: 0 }} {...other} />;
   }
 
 
@@ -56,7 +56,7 @@ function Day(props) {
     <CustomPickersDay
       {...other}
       day={day}
-      sx={dayIsSelected ? { px: 2.5, mx: 0 } : {}}
+      sx={{ px: 2.5, mx: 0 }}
       dayIsSelected={dayIsSelected}
       onMouseOver={handleMouseOver}
       onMouseDown={handleMouseDown}
@@ -140,9 +140,9 @@ export default function Calendar() {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
-      <h1>Select Days:</h1>
+      <h1 style={{userSelect: "none"}}>Select Days:</h1>
       
-      <div className='calendar'>
+      <div className='calendar' style={{userSelect: "none"}}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             disableHighlightToday
