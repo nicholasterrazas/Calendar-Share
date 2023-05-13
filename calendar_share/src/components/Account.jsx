@@ -1,46 +1,49 @@
 import React from 'react';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+import { useAuth } from '../firebase/authContext';
+import { Avatar, AvatarGroup, Box, Button, Container, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack } from '@mui/material';
+import { CalendarMonth } from '@mui/icons-material';
+import theme from './theme';
 
 
 function UserDetails(props) {
   const { name, email } = props;
 
   return (
-    <Paper className='paper'>
-      <Typography variant="h6" gutterBottom>
+    <Container maxWidth='xs'>
+      <Typography variant="h4"align='center' gutterBottom>
         User Details
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+      <Stack spacing={3}>        
           <TextField
-            required
             id="name"
             name="name"
             label="Name"
             fullWidth
             autoComplete="name"
-            value={name}
-            disabled
+            defaultValue={name}
           />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="email"
-            name="email"
-            label="Email"
-            fullWidth
-            autoComplete="email"
-            value={email}
-            disabled
-          />
-        </Grid>
-      </Grid>
-    </Paper>
+          
+          {
+            (email !==null) ? (
+              <TextField
+                id="email"
+                name="email"
+                label="Email"
+                fullWidth
+                autoComplete="email"
+                defaultValue={email}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />   
+            ) : (null)  
+          }
+
+          <Button variant='contained'>Submit Changes</Button>
+      </Stack>
+    </Container>
   );
 }
 
@@ -48,42 +51,100 @@ function PreviousCalendarList(props) {
   const { list } = props;
 
   return (
-    <Paper className='paper'>
-      <Typography variant="h6" gutterBottom>
-        Previous Calendars
-      </Typography>
-      <Box overflow="auto" maxHeight={300}>
-        <ul>
+    // <Container >
+      <Box 
+        sx={{ 
+          // boxShadow: 1, 
+          width: '65%', 
+          bgcolor: 'background.paper',
+          alignSelf: 'center' 
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          align='center' 
+          gutterBottom >
+          Previous Calendars
+        </Typography>
+        <List>
           {list.map((item) => (
-            <li key={item.id}>{item.name}</li>
+            <ListItem >
+              <ListItemButton key={item.id} >
+                <ListItemAvatar>
+                  <Avatar 
+                    sx={{
+                      color: theme.palette.primary.main, 
+                      bgcolor: 'white'
+                    }}
+                  >
+                    <CalendarMonth  
+                      fontSize='large'/>
+                  </Avatar>
+                </ListItemAvatar>
+
+                <ListItemText 
+                  primary={item.name} 
+                  // sx={{textAlign: 'center', }}
+                />
+
+                <AvatarGroup max={4} total={Math.floor(Math.random() * (6) + 2)}>
+                  <Avatar />
+                  <Avatar />
+                  <Avatar />
+                </AvatarGroup>
+
+              </ListItemButton>
+            </ListItem>
           ))}
-        </ul>
+        </List>
       </Box>
-    </Paper>
+    // </Container>
   );
 }
 
 function AccountPage() {
+  const { currentUser } = useAuth();  
+
   const userDetails = {
-    name: 'John Doe',
-    email: 'johndoe@example.com',
+    name: currentUser ? currentUser.displayName : 'Anonymous Guest',
+    email: currentUser ? currentUser.email : null,
   };
+
   const previousCalendarList = [
-    { id: 1, name: 'Calendar Room 1' },
-    { id: 2, name: 'Calendar Room 2' },
-    { id: 3, name: 'Calendar Room 3' },
+    { id: 1, name: 'School' },
+    { id: 2, name: 'Vacation' },
+    { id: 3, name: 'Project Deadlines ' },
   ];
 
   return (
-    <div className='grid'>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <UserDetails name={userDetails.name} email={userDetails.email} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <PreviousCalendarList list={previousCalendarList} />
-        </Grid>
-      </Grid>
+    <div className='account_page'>
+      <Box 
+        sx={{
+          bgcolor: 'background.paper',
+          pt: 8,
+          pb: 6,
+          width: '100%',
+          // boxShadow: 1
+        }}
+      >
+        <Container maxWidth='xl'>
+          <Stack 
+              direction='column'
+              spacing={3} 
+              justifyContent='center'
+            >
+              <UserDetails name={userDetails.name} email={userDetails.email} />
+              <Divider 
+                orientation='horizontal' 
+                flexItem 
+                sx={{width: '65%',
+                  alignSelf:'center'
+                }}
+              />
+              <PreviousCalendarList list={previousCalendarList} />
+            </Stack>
+        </Container>
+      </Box>
     </div>
   );
 }

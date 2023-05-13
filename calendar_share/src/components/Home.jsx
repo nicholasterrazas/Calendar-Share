@@ -33,10 +33,10 @@ const Home = () => {
             spacing={2}
             justifyContent="center"
           >
-            <Button component={Link} to="/calendar" variant="contained" color="primary">
+            <Button component={Link} to="/calendar" variant="contained" color="primary" size='large'>
               Create a Calendar
             </Button>
-            <Button component={Link} to="/calendar" variant="outlined" color="primary">
+            <Button component={Link} to="/calendar" variant="outlined" color="primary" size='large'>
               Join a Calendar
             </Button>
           </Stack>
