@@ -11,6 +11,7 @@ import Menu from '@mui/material/Menu';
 import { useAuth } from '../firebase/authContext';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { Avatar, Button, Divider } from '@mui/material';
+import axios from 'axios';
 import theme from './theme';
 
 export default function MenuAppBar() {
@@ -22,7 +23,44 @@ export default function MenuAppBar() {
 
   // console.log('logged in status: ');
   // console.log(auth);
-  console.log(user);
+  // console.log(user);
+
+
+  // Check if the user exists
+  const checkUserExists = async (uid) => {
+    try {
+      const response = await axios.get(`http://localhost:5050/users/${uid}`);
+      console.log(response);
+      const exists = Boolean(response.data !== 'Not found');
+      return exists;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  // Create a new user
+  const createUser = async (user_id, name, email, photoURL) => {
+    // rooms = {
+    //   room_id,
+    //   owner: 'nico'
+    // }
+    console.log('creating user: ');
+    const db_user = {
+      user_id: user_id,
+      name: name,
+      email: email,
+      photoURL: photoURL,
+      rooms: []
+    }
+    console.log(db_user);
+
+    try {
+      await axios.post('http://localhost:5050/users', db_user);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,16 +78,24 @@ export default function MenuAppBar() {
     setProfileEl(null);
   };
 
-
   const handleLogin = () => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
         setAuth(true);
         const user = result.user;
         // console.log(user);
         setUser(user);
+
+        const exists = await checkUserExists(user.uid);
+        console.log('user_exists: '+exists);
+
+        // If the user doesn't exist, create a new user
+        if (!exists) {
+          createUser(user.uid, user.displayName, user.email, user.photoURL);
+        }
+
       })
       .catch((error) => {
         console.error(error);

@@ -12,9 +12,10 @@ router.get("/", async (req, res) => {
 });
 
 // This section will help you get a single user by id
-router.get("/:id", async (req, res) => {
+router.get("/:user_id", async (req, res) => {
+  // console.log('');
   let collection = await db.collection("users");
-  let query = {_id: new ObjectId(req.params.id)};
+  let query = {user_id: req.params.user_id.toString() };
   let result = await collection.findOne(query);
 
   if (!result) res.send("Not found").status(404);
@@ -35,8 +36,8 @@ router.post("/", async (req, res) => {
 });
 
 // This section will help you update a user by id.
-router.patch("/:id", async (req, res) => {
-  const query = { _id: new ObjectId(req.params.id) };
+router.patch("/:user_id", async (req, res) => {
+  const query = { user_id: req.params.user_id.toString() };
   const updates =  {
     $set: {
       user_id: req.body.user_id,
@@ -53,8 +54,8 @@ router.patch("/:id", async (req, res) => {
 });
 
 // This section will help you delete a user
-router.delete("/:id", async (req, res) => {
-  const query = { _id: new ObjectId(req.params.id) };
+router.delete("/:user_id", async (req, res) => {
+  const query = { user_id: req.params.user_id.toString() };
 
   const collection = db.collection("users");
   let result = await collection.deleteOne(query);

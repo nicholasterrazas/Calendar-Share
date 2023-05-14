@@ -28,12 +28,12 @@ router.post("/", async (req, res) => {
     room_title: req.body.room_title,
     participants: req.body.participants,
   };
-  let collection = await db.collection("room");
+  let collection = await db.collection("rooms");
   let result = await collection.insertOne(newDocument);
   res.send(result).status(204);
 });
 
-// This section will help you update a user by id.
+// This section will help you update a room by id.
 router.patch("/:id", async (req, res) => {
   const query = { _id: new ObjectId(req.params.id) };
   const updates =  {
@@ -44,17 +44,17 @@ router.patch("/:id", async (req, res) => {
     }
   };
 
-  let collection = await db.collection("users");
+  let collection = await db.collection("rooms");
   let result = await collection.updateOne(query, updates);
 
   res.send(result).status(200);
 });
 
-// This section will help you delete a user
+// This section will help you delete a room
 router.delete("/:id", async (req, res) => {
   const query = { _id: new ObjectId(req.params.id) };
 
-  const collection = db.collection("users");
+  const collection = db.collection("rooms");
   let result = await collection.deleteOne(query);
 
   res.send(result).status(200);
