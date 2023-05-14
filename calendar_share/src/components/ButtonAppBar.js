@@ -15,19 +15,36 @@ import axios from 'axios';
 import theme from './theme';
 
 export default function MenuAppBar() {
-  const { currentUser } = useAuth();
+  const { currentUser, setDbUser, dbUser } = useAuth();
   const [auth, setAuth] = React.useState(currentUser !== null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
 
-  // console.log('logged in status: ');
-  // console.log(auth);
-  // console.log(user);
+
+  React.useEffect(() => {
+    const getUserData = async () => {
+      console.log('retrieving user: ' + currentUser.uid );
+      try {
+        const response = await axios.get(`http://localhost:5050/users/${currentUser.uid}`);
+        // console.log(response);
+        setDbUser(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (currentUser) {
+      console.log(user);  
+      getUserData();
+    }
+  }, [currentUser]);
+
 
 
   // Check if the user exists
   const checkUserExists = async (uid) => {
+    console.log('checking user with uid: ' + uid);
     try {
       const response = await axios.get(`http://localhost:5050/users/${uid}`);
       console.log(response);
@@ -41,10 +58,6 @@ export default function MenuAppBar() {
 
   // Create a new user
   const createUser = async (user_id, name, email, photoURL) => {
-    // rooms = {
-    //   room_id,
-    //   owner: 'nico'
-    // }
     console.log('creating user: ');
     const db_user = {
       user_id: user_id,
@@ -148,9 +161,17 @@ export default function MenuAppBar() {
             <MenuItem component={RouterLink} to="/calendar" onClick={handleClose}>Calendar</MenuItem>
             <MenuItem component={RouterLink} to="/account" onClick={handleClose}>Account</MenuItem>
           </Menu>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="a" href='/' sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit'}}>
             Calendar Share
           </Typography>
+          
+          {
+            dbUser && 
+            <Typography variant="h6" component="h6" >
+              {dbUser.name}
+            </Typography>
+          }
+
           {!auth && (
             <div>
               <Button variant='contained' onClick={handleLogin} sx={{bgcolor: theme.palette.primary.alternate}}>Login</Button>
