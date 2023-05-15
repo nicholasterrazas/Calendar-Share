@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Stack from '@mui/material/Stack';
 import { Refresh, Save } from '@mui/icons-material';
 import CalendarList from './CalendarLists';
-
+import { useParams } from 'react-router-dom';
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
@@ -103,6 +103,7 @@ function groupAdjacentDays(dayList) {
 
 
 export default function Calendar() {
+  const { room_id } = useParams();
   const [value, setValue] = React.useState(dayjs('2023-05-06'));
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const [dayList, setDayList] = React.useState([]);
@@ -140,6 +141,10 @@ export default function Calendar() {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
+      {
+        room_id && 
+        <h1>Room ID: {room_id}</h1>
+      }
       <h1 style={{userSelect: "none"}}>Select Days:</h1>
       
       <div className='calendar' style={{userSelect: "none"}}>

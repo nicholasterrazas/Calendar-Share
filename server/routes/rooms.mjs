@@ -24,8 +24,8 @@ router.get("/:id", async (req, res) => {
 // This section will help you create a new room.
 router.post("/", async (req, res) => {
   let newDocument = {
-    room_id: req.body.room_id,
-    room_title: req.body.room_title,
+    title: req.body.title,
+    host_id: req.body.host_id,
     participants: req.body.participants,
   };
   let collection = await db.collection("rooms");
