@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import './Calendar.css';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
@@ -13,6 +13,8 @@ import Stack from '@mui/material/Stack';
 import { Refresh, Save } from '@mui/icons-material';
 import CalendarList from './CalendarLists';
 import { useParams } from 'react-router-dom';
+import axios from "axios";
+import { useAuth } from '../firebase/authContext';
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
@@ -104,10 +106,34 @@ function groupAdjacentDays(dayList) {
 
 export default function Calendar() {
   const { room_id } = useParams();
+  const { dbUser, setDbUser } = useAuth();
   const [value, setValue] = React.useState(dayjs('2023-05-06'));
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const [dayList, setDayList] = React.useState([]);
   const [stableList, setStableList] = React.useState([])
+  const [room, setRoom] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!room_id){
+      console.info('No id provided');
+      return
+    }
+    console.log(`retrieving room: ${room_id}`)
+    // fetch room document from backend API
+    axios.get(`http://localhost:5050/rooms/${room_id}`)
+      .then(response => {
+        // set room state to room document
+        if (response.data === 'Invalid room ID'){
+          console.error('Invalid id!');
+          return;
+        }
+        console.log(response.data);
+        setRoom(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, [room_id]);
 
   function toggleDays(newValue){
     console.log(newValue);
@@ -127,6 +153,98 @@ export default function Calendar() {
   }
 
 
+  const handleClear = () => {
+    console.log('Clearing calendar: ');
+    console.log(dayList);
+    setDayList([]);
+  }
+
+  const handleSave = () => {
+    console.log('Saving calendar: ');
+    console.log(dayList);
+
+    if (room===null || room === undefined){
+      console.log('No room to save to!');
+      return;
+    }
+  
+    // SAVE SELECTED DAYS TO ROOM DB
+    console.log(`updating room ${room_id}`);
+    console.log(room);
+    let foundUser = false;
+    let updatedRoom = { 
+      ...room,
+      participants: room.participants.map(participant => {
+        // console.log(participant.user_id);
+        // console.log(dbUser.user_id);
+        if (participant.user_id === dbUser.user_id) {
+          // Update the selected days of the current user
+          foundUser = true;
+          return {
+            ...participant,
+            selected_days: dayList
+          };
+        } else {
+          // Keep the other participants as they are
+          return participant;
+        }
+      })
+    };
+
+    if (!foundUser){
+      const guest = {
+        user_id: dbUser.user_id,
+        name: dbUser.name,
+        selected_days: dayList
+      }
+      
+      const newParticipants = room.participants;
+      newParticipants.push(guest);
+
+      updatedRoom = { ...room, participants: newParticipants}
+
+      // add room to user's list 
+      const guestRooms = dbUser.rooms;
+      guestRooms.push(room_id);
+      const updatedUser = { ...dbUser, rooms: guestRooms }
+
+      axios
+        .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+        .then((response) => {
+          console.log(response);
+
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+
+    // update user's selected days
+    console.log('updatedRoom: ');
+    console.log(updatedRoom);
+
+    axios
+      .patch(`http://localhost:5050/rooms/${room_id}`, updatedRoom)
+      .then(response => {
+        // Update the local state with the updated room
+        console.log(response);
+        setStableList(dayList);
+        setRoom(updatedRoom);
+
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  const handleRestore = () => {
+    console.log('Restoring calendar: ');
+    console.log(stableList);
+    setDayList(stableList);
+  };
+
+
   const handleMouseDown = () => {
     // console.log('mouse down');
     setIsMouseDown(true);
@@ -141,10 +259,19 @@ export default function Calendar() {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
-      {
-        room_id && 
-        <h1>Room ID: {room_id}</h1>
-      }
+      {room && (
+        <div>
+          <h1>{room.title}</h1>
+          <p>Room ID: {room._id}</p>
+          <p>Host: {room.host_id}</p>
+          <p>Participants:</p>
+          <ul>
+            {room.participants.map(participant => (
+              <li key={participant.user_id}>{participant.name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <h1 style={{userSelect: "none"}}>Select Days:</h1>
       
       <div className='calendar' style={{userSelect: "none"}}>
@@ -170,15 +297,12 @@ export default function Calendar() {
         </LocalizationProvider>
       </div>
 
+      {dbUser && 
       <Stack direction="row" spacing={2} justifyContent="center">
         <Button 
           variant="outlined" 
           endIcon={<DeleteIcon />}
-          onClick={() => {
-            console.log('Clearing calendar: ');
-            console.log(dayList);
-            setDayList([]);
-          }}
+          onClick={handleClear}
           disabled={!dayList.length}  
         >
           Clear Calendar
@@ -186,11 +310,7 @@ export default function Calendar() {
         <Button 
           variant="contained" 
           endIcon={<Save />}
-          onClick={() => {
-            console.log('Saving calendar: ');
-            console.log(dayList);
-            setStableList(dayList);
-          }}
+          onClick={handleSave}
           disabled={(stableList === dayList) || (stableList.length === 0 && dayList.length === 0)}
         >
           Save Calendar
@@ -198,16 +318,12 @@ export default function Calendar() {
         <Button
           variant="outlined"
           endIcon={<Refresh />}
-          onClick={() => {
-            console.log('Restoring calendar: ');
-            console.log(stableList);
-            setDayList(stableList);
-          }}
+          onClick={handleRestore}
           disabled={!stableList.length || stableList === dayList}
         >
           Restore Calendar
         </Button>  
-      </Stack>
+      </Stack>}
       
       <div className='day_lists' style={{ width: '50%' }}>
         <Stack 

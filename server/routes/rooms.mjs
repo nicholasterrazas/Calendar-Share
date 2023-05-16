@@ -12,13 +12,20 @@ router.get("/", async (req, res) => {
 });
 
 // This section will help you get a single room by id
-router.get("/:id", async (req, res) => {
-  let collection = await db.collection("rooms");
-  let query = {_id: new ObjectId(req.params.id)};
-  let result = await collection.findOne(query);
-
-  if (!result) res.send("Not found").status(404);
-  else res.send(result).status(200);
+router.get("/:room_id", async (req, res) => {
+    try {
+      let collection = await db.collection("rooms");
+      let query = {_id: new ObjectId(req.params.room_id)};
+      let result = await collection.findOne(query);
+  
+      if (!result) {
+        res.send("Not found").status(404);
+      } else {
+        res.send(result).status(200);
+      }        
+    } catch (err) {
+      res.send("Invalid room ID").status(400);
+    }
 });
 
 // This section will help you create a new room.
@@ -34,13 +41,13 @@ router.post("/", async (req, res) => {
 });
 
 // This section will help you update a room by id.
-router.patch("/:id", async (req, res) => {
-  const query = { _id: new ObjectId(req.params.id) };
+router.patch("/:room_id", async (req, res) => {
+  const query = { _id: new ObjectId(req.params.room_id) };
   const updates =  {
     $set: {
-        room_id: req.body.room_id,
-        room_title: req.body.room_title,
-        participants: req.body.participants,
+      title: req.body.title,
+      host_id: req.body.host_id,
+      participants: req.body.participants,
     }
   };
 

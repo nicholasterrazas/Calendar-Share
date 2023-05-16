@@ -18,6 +18,7 @@ function App() {
             <Routes>
               <Route path='/' element={<Home/>} />
               <Route path='/calendar/:room_id' element={<Calendar/>} />
+              <Route path='/calendar/' element={<Calendar/>} />
               <Route path='/account' element={<Account/>} />
             </Routes>
           </div>
