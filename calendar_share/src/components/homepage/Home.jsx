@@ -27,8 +27,8 @@ const Home = () => {
     axios
     .post('http://localhost:5050/rooms', room)
     .then((response) => {
-      // console.log(response);
-      const room_id = response.data.insertedId
+      console.log(response);
+      const room_id = response.data.room_id;
       console.log(`created room: ${room_id}`);
 
       // update user to include room in their rooms

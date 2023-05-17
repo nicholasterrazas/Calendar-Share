@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useAuth } from '../firebase/authContext';
@@ -13,53 +12,55 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/
 import { Avatar, Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import axios from 'axios';
 import theme from '../theme';
-import { AccountBox, CalendarMonth, Group, Home } from '@mui/icons-material';
+import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from '@mui/icons-material';
 
 export default function MenuAppBar() {
   const { currentUser, setDbUser, dbUser } = useAuth();
   const [auth, setAuth] = React.useState(currentUser !== null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
 
   const drawerWidth = 240;
 
+  // Load user from database
   React.useEffect(() => {
-    const getUserData = async () => {
+    const getUserData = () => {
       console.log('retrieving user: ' + currentUser.uid );
-      try {
-        const response = await axios.get(`http://localhost:5050/users/${currentUser.uid}`);
-        // console.log(response);
-        setDbUser(response.data);
-      } catch (error) {
-        console.error(error);
-      }
+      axios.get(`http://localhost:5050/users/${currentUser.uid}`)
+        .then(response => {
+          // console.log(response);
+          setDbUser(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
-
+  
     if (currentUser) {
       console.log(user);  
       getUserData();
     }
   }, [currentUser]);
-
+  
 
 
   // Check if the user exists
-  const checkUserExists = async (uid) => {
+  const checkUserExists = (uid) => {
     console.log('checking user with uid: ' + uid);
-    try {
-      const response = await axios.get(`http://localhost:5050/users/${uid}`);
-      console.log(response);
-      const exists = Boolean(response.data !== 'Not found');
-      return exists;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    return axios.get(`http://localhost:5050/users/${uid}`)
+      .then(response => {
+        console.log(response);
+        const exists = Boolean(response.data !== 'Not found');
+        return exists;
+      })
+      .catch(error => {
+        console.error(error);
+        return false;
+      });
   };
 
   // Create a new user
-  const createUser = async (user_id, name, email, photoURL) => {
+  const createUser = (user_id, name, email, photoURL) => {
     console.log('creating user: ');
     const db_user = {
       user_id: user_id,
@@ -69,21 +70,13 @@ export default function MenuAppBar() {
       rooms: []
     }
     console.log(db_user);
-
-    try {
-      await axios.post('http://localhost:5050/users', db_user);
-    } catch (error) {
-      console.error(error);
-    }
+  
+    return axios.post('http://localhost:5050/users', db_user)
+      .catch(error => {
+        console.error(error);
+      });
   };
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleProfile = (event) => {
     setProfileEl(event.currentTarget);
@@ -134,35 +127,6 @@ export default function MenuAppBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='fixed' sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}>
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={handleMenu}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem component={RouterLink} to="/" onClick={handleClose}>Home</MenuItem>
-            <MenuItem component={RouterLink} to="/calendar" onClick={handleClose}>Calendar</MenuItem>
-            <MenuItem component={RouterLink} to="/account" onClick={handleClose}>Account</MenuItem>
-          </Menu>
           <Typography variant="h6" component="div"  sx={{ flexGrow: 1 }}>
             Calendar Share
           </Typography>
@@ -181,7 +145,6 @@ export default function MenuAppBar() {
           )}
           {auth && (
             <div>
-              {/* <Button variant='contained' onClick={handleLogout} sx={{bgcolor: theme.palette.primary.alternate}}>Logout</Button> */}
               <IconButton
                 size="large"
                 aria-label="account of current user"
@@ -228,13 +191,18 @@ export default function MenuAppBar() {
         }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
+        <Box 
+          sx={{ 
+            overflow: 'auto', 
+            // bgcolor: '#eeeeee' 
+          }}  
+        >
           <List
             subheader={
               <ListSubheader component="div" id="nested-list-subheader">
-                Pages
+                Navigation
               </ListSubheader>
-            } 
+            }
           >
             <ListItem key='home' disablePadding>
               <ListItemButton href='/'>
@@ -254,10 +222,10 @@ export default function MenuAppBar() {
               </ListItemButton>
             </ListItem>
 
-            <ListItem key='calendar' disablePadding>
+            <ListItem key='account' disablePadding>
               <ListItemButton href='/account'>
                 <ListItemIcon>
-                  <AccountBox/>
+                  <AccountBoxSharp />
                 </ListItemIcon>
                 <ListItemText primary='Account' />
               </ListItemButton>
@@ -265,15 +233,45 @@ export default function MenuAppBar() {
 
           </List>
           
-          {dbUser && 
-          <div className='user_rooms'>
-            <Divider />
-            <List 
+          <Divider />
+
+          <List
             subheader={
               <ListSubheader component="div" id="nested-list-subheader">
-                Calendars
+                Shortcuts
               </ListSubheader>
             } 
+          >
+            <ListItem key='create-room' disablePadding>
+              <ListItemButton href='/calendar'>
+                <ListItemIcon>
+                  <Add />
+                </ListItemIcon>
+                <ListItemText primary='Create Calendar' />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem key='join-room' disablePadding>
+              <ListItemButton href='/calendar'>
+                <ListItemIcon>
+                  <TurnLeft style={{ rotate: '180deg' }} />
+                </ListItemIcon>
+                <ListItemText primary='Join Calendar' />
+              </ListItemButton>
+            </ListItem>
+
+          </List>
+
+          {dbUser && dbUser.rooms.length !== 0 &&
+          <div className='user_rooms'>
+            <Divider />
+            <List
+              dense 
+              subheader={
+                <ListSubheader component="div" id="nested-list-subheader">
+                  Calendars
+                </ListSubheader>
+              } 
             >
               {dbUser && dbUser.rooms.map((room_id, index) => (
                 <ListItem key={room_id} disablePadding>
@@ -281,7 +279,10 @@ export default function MenuAppBar() {
                     <ListItemIcon>
                       <Group />
                     </ListItemIcon>
-                    <ListItemText primary={`Room #${index+1}`} />
+                    <ListItemText 
+                      primary={`Room ${index+1}`} 
+                      secondary={`#${room_id}`} 
+                    />
                   </ListItemButton>
                 </ListItem>
               ))}

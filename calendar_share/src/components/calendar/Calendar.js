@@ -93,10 +93,16 @@ export default function Calendar() {
     axios.get(`http://localhost:5050/rooms/${room_id}`)
       .then(response => {
         // set room state to room document
-        if (response.data === 'Invalid room ID'){
-          console.error('Invalid id!');
+        if (response.data === 'Invalid Room ID'){
+          console.error('Invalid Room ID!');
           return;
         }
+
+        if (response.data === 'Not found'){
+          console.error('Invalid Room ID');
+          return
+        }
+
         console.log(response.data);
         setRoom(response.data);
       })
@@ -146,7 +152,7 @@ export default function Calendar() {
           </Typography>
           <Box textAlign='center'>
             <Button variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
-              Room ID: {room._id}
+              Room ID: {room.room_id}
             </Button>
           </Box>
         </div>
