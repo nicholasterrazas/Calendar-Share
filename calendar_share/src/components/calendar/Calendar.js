@@ -8,13 +8,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { Box, Button, Typography } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Stack from '@mui/material/Stack';
-import { ContentCopy, Refresh, Save } from '@mui/icons-material';
+import { ContentCopy, } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import axios from "axios";
 import { useAuth } from '../firebase/authContext';
 import UserLists from './UserLists';
+import CalendarButtons from './CalendarButtons';
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
@@ -81,7 +80,7 @@ export default function Calendar() {
   const [value, setValue] = React.useState(dayjs('2023-05-06'));
   const [isMouseDown, setIsMouseDown] = React.useState(false);
   const [dayList, setDayList] = React.useState([]);
-  const [stableList, setStableList] = React.useState([])
+  const [stableList, setStableList] = React.useState([]);
   const [room, setRoom] = React.useState(null);
 
   React.useEffect(() => {
@@ -124,98 +123,6 @@ export default function Calendar() {
   }
 
 
-  const handleClear = () => {
-    console.log('Clearing calendar: ');
-    console.log(dayList);
-    setDayList([]);
-  }
-
-  const handleSave = () => {
-    console.log('Saving calendar: ');
-    console.log(dayList);
-
-    if (room===null || room === undefined){
-      console.warn('No room to save to!');
-      return;
-    }
-  
-    // SAVE SELECTED DAYS TO ROOM DB
-    console.log(`updating room ${room_id}`);
-    console.log(room);
-    let foundUser = false;
-    let updatedRoom = { 
-      ...room,
-      participants: room.participants.map(participant => {
-        // console.log(participant.user_id);
-        // console.log(dbUser.user_id);
-        if (participant.user_id === dbUser.user_id) {
-          // Update the selected days of the current user
-          foundUser = true;
-          return {
-            ...participant,
-            selected_days: dayList
-          };
-        } else {
-          // Keep the other participants as they are
-          return participant;
-        }
-      })
-    };
-
-    if (!foundUser){
-      const guest = {
-        user_id: dbUser.user_id,
-        name: dbUser.name,
-        selected_days: dayList
-      }
-      
-      const newParticipants = room.participants;
-      newParticipants.push(guest);
-
-      updatedRoom = { ...room, participants: newParticipants}
-
-      // add room to user's list 
-      const guestRooms = dbUser.rooms;
-      guestRooms.push(room_id);
-      const updatedUser = { ...dbUser, rooms: guestRooms }
-
-      axios
-        .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
-        .then((response) => {
-          console.log(response);
-          setDbUser(updatedUser);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-
-
-    // update user's selected days
-    console.log('updatedRoom: ');
-    console.log(updatedRoom);
-
-    axios
-      .patch(`http://localhost:5050/rooms/${room_id}`, updatedRoom)
-      .then(response => {
-        // Update the local state with the updated room
-        console.log(response);
-        setStableList(dayList);
-        setRoom(updatedRoom);
-
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  const handleRestore = () => {
-    console.log('Restoring calendar: ');
-    console.log(stableList);
-    setDayList(stableList);
-  };
-
-
   const handleMouseDown = () => {
     // console.log('mouse down');
     setIsMouseDown(true);
@@ -225,6 +132,8 @@ export default function Calendar() {
     // console.log('mouse up');
     setIsMouseDown(false);
   };
+
+
   return (
     <div className='calendar_page'
       onMouseDown={handleMouseDown}
@@ -267,32 +176,19 @@ export default function Calendar() {
         </LocalizationProvider>
       </div>
 
-      {dbUser && 
-      <Stack direction="row" spacing={2} justifyContent="center">
-        <Button 
-          variant="outlined" 
-          endIcon={<DeleteIcon />}
-          onClick={handleClear}
-          disabled={!dayList.length}  
-        >
-          Clear Calendar
-        </Button>
-        <Button 
-          variant="contained" 
-          endIcon={<Save />}
-          onClick={handleSave}
-        >
-          Save Calendar
-        </Button>
-        <Button
-          variant="outlined"
-          endIcon={<Refresh />}
-          onClick={handleRestore}
-          disabled={!stableList.length || stableList === dayList}
-        >
-          Restore Calendar
-        </Button>  
-      </Stack>}
+      {dbUser &&
+        <CalendarButtons 
+          dayList={dayList} 
+          setDayList={setDayList} 
+          stableList={stableList} 
+          setStableList={setStableList} 
+          room_id={room_id}  
+          room={room}
+          setRoom={setRoom} 
+          dbUser={dbUser}
+          setDbUser={setDbUser}
+        /> 
+      }
       
       {room && 
       <UserLists className='user_lists' users={room.participants}/>}
