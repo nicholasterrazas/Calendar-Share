@@ -13,7 +13,7 @@ const Home = () => {
 
     // create room
     const room = {
-      title: `${dbUser.name}'s room`,
+      title: `${dbUser.name}'s Room`,
       host_id: dbUser.user_id,
       participants: [
         {

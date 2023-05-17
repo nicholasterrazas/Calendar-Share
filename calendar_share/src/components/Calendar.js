@@ -7,14 +7,14 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { Button, Divider } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Stack from '@mui/material/Stack';
-import { Refresh, Save } from '@mui/icons-material';
-import CalendarList from './CalendarLists';
+import { ContentCopy, Refresh, Save } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import axios from "axios";
 import { useAuth } from '../firebase/authContext';
+import UserLists from './UserLists';
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
@@ -75,35 +75,6 @@ Day.propTypes = {
 };
 
 
-function groupAdjacentDays(dayList) {
-  let groups = [];
-  if (!dayList.length){
-    return groups;
-  }
-  let start = dayList[0];
-  let end = dayList[0];
-  for (let i = 1; i < dayList.length; i++) {
-    if (dayjs(dayList[i]).diff(dayjs(end), 'day') === 1) {
-      end = dayList[i];
-    } else {
-      if (start !== end) {
-        groups.push(`${dayjs(start).format('LL')} - ${dayjs(end).format('LL')}`);
-      } else {
-        groups.push(dayjs(start).format('LL'));
-      }
-      start = dayList[i];
-      end = dayList[i];
-    }
-  }
-  if (start !== end) {
-    groups.push(`${dayjs(start).format('LL')} - ${dayjs(end).format('LL')}`);
-  } else {
-    groups.push(dayjs(start).format('LL'));
-  }
-  return groups;
-}
-
-
 export default function Calendar() {
   const { room_id } = useParams();
   const { dbUser, setDbUser } = useAuth();
@@ -136,11 +107,11 @@ export default function Calendar() {
   }, [room_id]);
 
   function toggleDays(newValue){
-    console.log(newValue);
+    // console.log(newValue);
 
     // find item in list and remove it if it exists, otherwise add the new item, and ensure that the list is sorted
     const index = dayList.findIndex((d) => newValue.isSame(d, 'day'));
-    console.log('index: ' + index);
+    // console.log('index: ' + index);
     if (index !== -1) {
       const newList = [...dayList];
       newList.splice(index, 1);
@@ -149,7 +120,7 @@ export default function Calendar() {
       setDayList(prevDayList => [...prevDayList, newValue].sort((a, b) => (a.isAfter(b) ? 1 : -1)));
     }
     
-    console.log(dayList);
+    // console.log(dayList);
   }
 
 
@@ -164,7 +135,7 @@ export default function Calendar() {
     console.log(dayList);
 
     if (room===null || room === undefined){
-      console.log('No room to save to!');
+      console.warn('No room to save to!');
       return;
     }
   
@@ -212,7 +183,7 @@ export default function Calendar() {
         .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
         .then((response) => {
           console.log(response);
-
+          setDbUser(updatedUser);
         })
         .catch((error) => {
           console.error(error);
@@ -260,20 +231,19 @@ export default function Calendar() {
       onMouseUp={handleMouseUp}
     >
       {room && (
-        <div>
-          <h1>{room.title}</h1>
-          <p>Room ID: {room._id}</p>
-          <p>Host: {room.host_id}</p>
-          <p>Participants:</p>
-          <ul>
-            {room.participants.map(participant => (
-              <li key={participant.user_id}>{participant.name}</li>
-            ))}
-          </ul>
+        <div className='calendar_title'>
+          <Typography variant='h3' component='h1' align="center">
+            {room.title}
+          </Typography>
+          <Box textAlign='center'>
+            <Button variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
+              Room ID: {room._id}
+            </Button>
+          </Box>
+
+
         </div>
       )}
-      <h1 style={{userSelect: "none"}}>Select Days:</h1>
-      
       <div className='calendar' style={{userSelect: "none"}}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
@@ -311,7 +281,6 @@ export default function Calendar() {
           variant="contained" 
           endIcon={<Save />}
           onClick={handleSave}
-          disabled={(stableList === dayList) || (stableList.length === 0 && dayList.length === 0)}
         >
           Save Calendar
         </Button>
@@ -325,17 +294,8 @@ export default function Calendar() {
         </Button>  
       </Stack>}
       
-      <div className='day_lists' style={{ width: '50%' }}>
-        <Stack 
-          direction="row"
-          justifyContent="center"
-          spacing={0}
-          divider={<Divider orientation="vertical" flexItem />}
-        >
-          <CalendarList title="Currently selected days:" items={groupAdjacentDays(dayList)} />
-          <CalendarList title="Saved days:" items={groupAdjacentDays(stableList)} />
-        </Stack>
-      </div>
+      {room && 
+      <UserLists className='user_lists' users={room.participants}/>}
 
     </div>
   );
