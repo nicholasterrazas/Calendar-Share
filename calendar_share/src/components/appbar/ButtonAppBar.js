@@ -10,9 +10,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useAuth } from '../firebase/authContext';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { Avatar, Button, Divider } from '@mui/material';
+import { Avatar, Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import axios from 'axios';
 import theme from '../theme';
+import { AccountBox, CalendarMonth, Group, Home } from '@mui/icons-material';
 
 export default function MenuAppBar() {
   const { currentUser, setDbUser, dbUser } = useAuth();
@@ -21,6 +22,7 @@ export default function MenuAppBar() {
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
 
+  const drawerWidth = 240;
 
   React.useEffect(() => {
     const getUserData = async () => {
@@ -130,7 +132,7 @@ export default function MenuAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position='fixed' sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}>
         <Toolbar>
           <IconButton
             size="large"
@@ -161,7 +163,7 @@ export default function MenuAppBar() {
             <MenuItem component={RouterLink} to="/calendar" onClick={handleClose}>Calendar</MenuItem>
             <MenuItem component={RouterLink} to="/account" onClick={handleClose}>Account</MenuItem>
           </Menu>
-          <Typography variant="h6" component="a" href='/' sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit'}}>
+          <Typography variant="h6" component="div"  sx={{ flexGrow: 1 }}>
             Calendar Share
           </Typography>
           
@@ -217,6 +219,76 @@ export default function MenuAppBar() {
           )}
         </Toolbar>
       </AppBar>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+        }}
+      >
+        <Toolbar />
+        <Box sx={{ overflow: 'auto' }}>
+          <List
+            subheader={
+              <ListSubheader component="div" id="nested-list-subheader">
+                Pages
+              </ListSubheader>
+            } 
+          >
+            <ListItem key='home' disablePadding>
+              <ListItemButton href='/'>
+                <ListItemIcon>
+                  <Home />
+                </ListItemIcon>
+                <ListItemText primary='Home' />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem key='calendar' disablePadding>
+              <ListItemButton href='/calendar'>
+                <ListItemIcon>
+                  <CalendarMonth />
+                </ListItemIcon>
+                <ListItemText primary='Calendar' />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem key='calendar' disablePadding>
+              <ListItemButton href='/account'>
+                <ListItemIcon>
+                  <AccountBox/>
+                </ListItemIcon>
+                <ListItemText primary='Account' />
+              </ListItemButton>
+            </ListItem>
+
+          </List>
+          
+          {dbUser && 
+          <div className='user_rooms'>
+            <Divider />
+            <List 
+            subheader={
+              <ListSubheader component="div" id="nested-list-subheader">
+                Calendars
+              </ListSubheader>
+            } 
+            >
+              {dbUser && dbUser.rooms.map((room_id, index) => (
+                <ListItem key={room_id} disablePadding>
+                  <ListItemButton href={`/calendar/${room_id}`}>
+                    <ListItemIcon>
+                      <Group />
+                    </ListItemIcon>
+                    <ListItemText primary={`Room #${index+1}`} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </div>}
+        </Box>
+      </Drawer>
     </Box>
   );
 }

@@ -76,6 +76,7 @@ const Home = () => {
             align="center"
             color="text.primary"
             gutterBottom
+            pt='75px'
           >
             Calendar Share
           </Typography>

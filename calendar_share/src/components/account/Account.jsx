@@ -33,7 +33,7 @@ function UserDetails(props) {
 
   return (
     <Container maxWidth='xs'>
-      <Typography variant="h4" align='center' gutterBottom>
+      <Typography variant="h4" align='center' gutterBottom pt='75px'>
         User Details
       </Typography>
       <Stack spacing={3}>        
@@ -164,7 +164,7 @@ function AccountPage() {
       <Box 
         sx={{
           bgcolor: 'background.paper',
-          pt: 8,
+          pt: (dbUser ? 8 : 20),
           pb: 6,
           width: '100%',
           // boxShadow: 1
@@ -176,11 +176,13 @@ function AccountPage() {
               spacing={3} 
               justifyContent='center'
             >
-              {dbUser && <UserDetails 
+              {dbUser && 
+              <UserDetails 
                 dbUser={dbUser}
                 setDbUser={setDbUser}
-                />}
-              {dbUser && <Divider 
+              />}
+              {dbUser && 
+              <Divider 
                 orientation='horizontal' 
                 flexItem 
                 sx={{width: '65%',

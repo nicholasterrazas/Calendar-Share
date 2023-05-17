@@ -141,7 +141,7 @@ export default function Calendar() {
     >
       {room && (
         <div className='calendar_title'>
-          <Typography variant='h3' component='h1' align="center">
+          <Typography variant='h3' component='h1' align="center" pt='75px' gutterBottom>
             {room.title}
           </Typography>
           <Box textAlign='center'>
@@ -149,11 +149,9 @@ export default function Calendar() {
               Room ID: {room._id}
             </Button>
           </Box>
-
-
         </div>
       )}
-      <div className='calendar' style={{userSelect: "none"}}>
+      <div className='calendar' style={{userSelect: "none", paddingTop: room ? '0px' : '75px' }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             disableHighlightToday
