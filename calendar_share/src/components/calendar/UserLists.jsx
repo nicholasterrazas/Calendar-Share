@@ -1,4 +1,4 @@
-import { Box, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from "@mui/material";
+import { Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from "@mui/material";
 import React, { useState } from "react";
 import CalendarList from "./CalendarLists";
 import { CalendarMonth, ExpandLess, ExpandMore } from "@mui/icons-material";

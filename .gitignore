@@ -1,3 +1,2 @@
-calendar_share/src/firebase/firebaseConfig.js
-
+calendar_share/src/components/firebase/firebaseConfig.js
 server/.env

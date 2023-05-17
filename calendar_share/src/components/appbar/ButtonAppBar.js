@@ -12,7 +12,7 @@ import { useAuth } from '../firebase/authContext';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { Avatar, Button, Divider } from '@mui/material';
 import axios from 'axios';
-import theme from './theme';
+import theme from '../theme';
 
 export default function MenuAppBar() {
   const { currentUser, setDbUser, dbUser } = useAuth();

@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './firebase/authContext';
-import ButtonAppBar from './components/ButtonAppBar';
-import Home from './components/Home';
-import Calendar from './components/Calendar';
-import Account from './components/Account';
+import { AuthProvider } from './components/firebase/authContext';
+import ButtonAppBar from './components/appbar/ButtonAppBar';
+import Home from './components/homepage/Home';
+import Calendar from './components/calendar/Calendar';
+import Account from './components/account/Account';
 import { ThemeProvider } from '@emotion/react';
 import theme from './components/theme';
 

@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import { useAuth } from '../firebase/authContext';
 import { Avatar, AvatarGroup, Box, Button, Container, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack } from '@mui/material';
 import { CalendarMonth } from '@mui/icons-material';
-import theme from './theme';
+import theme from '../theme';
 import axios from "axios";
 
 
