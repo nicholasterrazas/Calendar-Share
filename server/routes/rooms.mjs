@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
 
 // This section will help you update a room by id.
 router.patch("/:room_id", async (req, res) => {
-  const query = { _id: new ObjectId(req.params.room_id) };
+  const query = { room_id: req.params.room_id };
   const updates =  {
     $set: {
       title: req.body.title,

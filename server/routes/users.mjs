@@ -13,13 +13,40 @@ router.get("/", async (req, res) => {
 
 // This section will help you get a single user by id
 router.get("/:user_id", async (req, res) => {
-  // console.log('');
   let collection = await db.collection("users");
   let query = {user_id: req.params.user_id.toString() };
   let result = await collection.findOne(query);
 
   if (!result) res.send("Not found").status(404);
   else res.send(result).status(200);
+});
+
+// This section will help you get a single user's rooms
+router.get("/:user_id/rooms", async (req, res) => {
+  try {
+    const userId = req.params.user_id.toString();
+    
+    // Find the user document with the specified user_id
+    const userCollection = await db.collection("users");
+    const user = await userCollection.findOne({ user_id: userId });
+  
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+  
+    // Get the room_ids from the user document
+    const roomIds = user.rooms;
+  
+    // Find the room documents with the specified room_ids
+    const roomCollection = await db.collection("rooms");
+    const rooms = await roomCollection.find({ room_id: { $in: roomIds } }).toArray();
+  
+    res.status(200).send(rooms);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 // This section will help you create a new user.

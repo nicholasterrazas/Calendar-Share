@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/firebase/authContext';
 import ButtonAppBar from './components/appbar/ButtonAppBar';
-import Home from './components/homepage/Home';
+import Home from './components/home/Home';
 import Calendar from './components/calendar/Calendar';
 import Account from './components/account/Account';
 import { ThemeProvider } from '@emotion/react';

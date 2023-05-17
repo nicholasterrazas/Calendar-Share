@@ -81,8 +81,8 @@ const Home = () => {
             Calendar Share
           </Typography>
           <Typography variant="h5" align="center" color="text.secondary" paragraph>
-            Create and share calendars easily with our website. 
-            Easily plan and organize events with friends and family.
+            Create and share calendars easily.  
+            Plan and organize events with friends and family.
             Discover new ways to stay organized and on top of your schedule. 
           </Typography>
           

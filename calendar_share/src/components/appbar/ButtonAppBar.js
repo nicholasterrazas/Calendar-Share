@@ -19,6 +19,7 @@ export default function MenuAppBar() {
   const [auth, setAuth] = React.useState(currentUser !== null);
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
+  const [rooms, setRooms] = React.useState(null);
 
   const drawerWidth = 240;
 
@@ -42,6 +43,20 @@ export default function MenuAppBar() {
     }
   }, [currentUser]);
   
+
+  React.useEffect(() => {
+    // Retrieve user's rooms
+    if (dbUser){
+      axios.get(`http://localhost:5050/users/${dbUser.user_id}/rooms`)
+        .then(response=> {
+          // console.log(response);
+          setRooms(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [dbUser]);
 
 
   // Check if the user exists
@@ -273,15 +288,15 @@ export default function MenuAppBar() {
                 </ListSubheader>
               } 
             >
-              {dbUser && dbUser.rooms.map((room_id, index) => (
-                <ListItem key={room_id} disablePadding>
-                  <ListItemButton href={`/calendar/${room_id}`}>
+              {rooms && rooms.map((room, index) => (
+                <ListItem key={room.room_id} disablePadding>
+                  <ListItemButton href={`/calendar/${room.room_id}`}>
                     <ListItemIcon>
                       <Group />
                     </ListItemIcon>
                     <ListItemText 
-                      primary={`Room ${index+1}`} 
-                      secondary={`#${room_id}`} 
+                      primary={`${room.title}`} 
+                      secondary={`#${room.room_id}`} 
                     />
                   </ListItemButton>
                 </ListItem>
