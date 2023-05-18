@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -20,7 +20,7 @@ export default function MenuAppBar() {
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
   const [rooms, setRooms] = React.useState(null);
-
+  const navigate = useNavigate();
   const drawerWidth = 240;
 
   // Load user from database
@@ -58,6 +58,63 @@ export default function MenuAppBar() {
     }
   }, [dbUser]);
 
+
+  const createRoom = () => {
+
+    if (!dbUser) {
+      console.warn('No user signed in!');
+      return;
+    }
+
+    console.log('creating room');
+
+    // create room
+    const room = {
+      title: `${dbUser.name}'s Room`,
+      host_id: dbUser.user_id,
+      participants: [
+        {
+          user_id: dbUser.user_id,
+          name: dbUser.name,
+          selected_days: []
+        }
+      ]
+    }
+
+    axios
+    .post('http://localhost:5050/rooms', room)
+    .then((response) => {
+      console.log(response);
+      const room_id = response.data.room_id;
+      console.log(`created room: ${room_id}`);
+
+      // update user to include room in their rooms
+      const newRooms = dbUser.rooms;
+      newRooms.push(room_id);
+      // console.log(newRooms);
+      
+      const updatedUser = { ...dbUser, rooms: newRooms };
+      
+      axios.patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+      .then((response) => {
+        // console.log(response);
+        setDbUser(updatedUser);
+        console.log(`added room "${room_id}" to user "${dbUser.user_id}"`);
+        console.log(updatedUser);
+        
+        // redirect to '/calendar/room_id'
+        navigate(`/calendar/${room_id}`);
+
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    })
+    .catch((error) => {
+      console.error(error);
+    })  
+  };
 
   // Check if the user exists
   const checkUserExists = (uid) => {
@@ -258,7 +315,7 @@ export default function MenuAppBar() {
             } 
           >
             <ListItem key='create-room' disablePadding>
-              <ListItemButton href='/calendar'>
+              <ListItemButton onClick={createRoom}>
                 <ListItemIcon>
                   <Add />
                 </ListItemIcon>
