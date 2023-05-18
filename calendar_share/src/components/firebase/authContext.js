@@ -17,12 +17,14 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dbUser, setdbUser] = useState(null);
+  const [rooms, setRooms] = useState(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setCurrentUser(user);
       setLoading(false);
       setdbUser(null);
+      setRooms(null);
     });
 
     return unsubscribe;
@@ -69,6 +71,8 @@ export const AuthProvider = ({ children }) => {
     signUp,
     logIn,
     logOut,
+    rooms,
+    setRooms,
   };
 
   return (

@@ -15,11 +15,10 @@ import theme from '../theme';
 import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from '@mui/icons-material';
 
 export default function MenuAppBar() {
-  const { currentUser, setDbUser, dbUser } = useAuth();
+  const { currentUser, setDbUser, dbUser, rooms, setRooms } = useAuth();
   const [auth, setAuth] = React.useState(currentUser !== null);
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
-  const [rooms, setRooms] = React.useState(null);
   const navigate = useNavigate();
   const drawerWidth = 240;
 

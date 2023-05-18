@@ -7,13 +7,12 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { Box, Button, Typography } from '@mui/material';
-import { ContentCopy, } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import axios from "axios";
 import { useAuth } from '../firebase/authContext';
 import UserLists from './UserLists';
 import CalendarButtons from './CalendarButtons';
+import CalendarTitle from './CalendarTitle';
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
@@ -145,19 +144,11 @@ export default function Calendar() {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
-      {room && (
-        <div className='calendar_title'>
-          <Typography variant='h3' component='h1' align="center" pt='75px' gutterBottom>
-            {room.title}
-          </Typography>
-          <Box textAlign='center'>
-            <Button variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
-              Room ID: {room.room_id}
-            </Button>
-          </Box>
-        </div>
-      )}
-      <div className='calendar' style={{userSelect: "none", paddingTop: room ? '0px' : '75px' }}>
+      
+      {room && 
+      <CalendarTitle room={room} />}
+
+      <div className='calendar' style={{userSelect: "none", paddingTop: room ? '0px' : '75px'}}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             disableHighlightToday
