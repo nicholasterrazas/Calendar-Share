@@ -12,6 +12,12 @@ function UserDetails(props) {
   const { dbUser, setDbUser } = props;
 
   const handleChange = () =>{
+
+    if (!dbUser) {
+      console.warn('No user signed in');
+      return;
+    }
+
     const nameInput = document.getElementById("name");
     const updatedUser = { ...dbUser, name: nameInput.value };
 
@@ -43,22 +49,21 @@ function UserDetails(props) {
             label="Name"
             fullWidth
             autoComplete="name"
-            defaultValue={dbUser.name}
+            defaultValue={dbUser ? dbUser.name : 'Guest User'}
           />
           
-          {dbUser.email !==null ? (
-              <TextField
-                id="email"
-                name="email"
-                label="Email"
-                fullWidth
-                autoComplete="email"
-                defaultValue={dbUser.email}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />   
-            ) : (null)}
+
+          <TextField
+            id="email"
+            name="email"
+            label="Email"
+            fullWidth
+            autoComplete="email"
+            defaultValue={dbUser ? dbUser.email : 'N/A'}
+            InputProps={{
+              readOnly: true,
+            }}
+          />   
 
           <Button variant='contained' onClick={handleChange}>Submit Changes</Button>
           
@@ -111,8 +116,9 @@ function PreviousCalendarList(props) {
         <Typography 
           variant="h4" 
           align='center' 
-          gutterBottom >
-          Previous Calendars
+          gutterBottom 
+        >
+          Calendar Rooms
         </Typography>
         <List>
           {list.map((item) => (
@@ -150,10 +156,69 @@ function PreviousCalendarList(props) {
   );
 }
 
-function AccountPage() {
-  const { dbUser, setDbUser } = useAuth();  
+function CalendarHistory({rooms}) {
+  
+  
+  return (
+    <Box 
+      sx={{ 
+        // boxShadow: 1, 
+        width: '65%', 
+        bgcolor: 'background.paper',
+        alignSelf: 'center' 
+      }}
+    >
+      <Typography 
+        variant="h4" 
+        align='center' 
+        gutterBottom 
+      >
+        Calendar Rooms
+      </Typography>
+      <List>
+        {rooms.map((room) => (
+          <ListItem key={room.room_id}>
+            <ListItemButton href={`/calendar/${room.room_id}`}>
+              <ListItemAvatar>
+                <Avatar 
+                  sx={{
+                    color: theme.palette.primary.main, 
+                    bgcolor: 'white'
+                  }}
+                >
+                  <CalendarMonth  
+                    fontSize='large'/>
+                </Avatar>
+              </ListItemAvatar>
 
-  const previousCalendarList = [
+              <ListItemText 
+                primary={room.title} 
+                // sx={{textAlign: 'center', }}
+              />
+
+            <AvatarGroup max={4}>
+              {room.participants.map((user) => (
+                <Avatar 
+                  key={user.user_id} 
+                  alt={user.name} 
+                  src={user.photoURL || 'https://examples.org/broken-pic'}
+                   />
+              ))}
+            </AvatarGroup>
+
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+}
+
+
+function AccountPage() {
+  const { dbUser, setDbUser, rooms } = useAuth();  
+
+  const exampleList = [
     { id: 1, name: 'School' },
     { id: 2, name: 'Vacation' },
     { id: 3, name: 'Projects' },
@@ -164,7 +229,7 @@ function AccountPage() {
       <Box 
         sx={{
           bgcolor: 'background.paper',
-          pt: (dbUser ? 8 : 20),
+          pt: 8,
           pb: 6,
           width: '100%',
           // boxShadow: 1
@@ -181,15 +246,26 @@ function AccountPage() {
                 dbUser={dbUser}
                 setDbUser={setDbUser}
               />}
-              {dbUser && 
+
+              {!dbUser &&
+              <UserDetails
+                dbUser={null}
+                setDbUser={null}
+              />}
+
               <Divider 
                 orientation='horizontal' 
                 flexItem 
                 sx={{width: '65%',
                   alignSelf:'center'
                 }}
-              />}
-              <PreviousCalendarList list={previousCalendarList} />
+              />
+              
+              {dbUser && rooms &&
+              <CalendarHistory rooms={rooms} />}
+
+              {!dbUser &&  
+              <PreviousCalendarList list={exampleList} />}
             </Stack>
         </Container>
       </Box>

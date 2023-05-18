@@ -148,7 +148,7 @@ export default function Calendar() {
       {room && 
       <CalendarTitle room={room} />}
 
-      <div className='calendar' style={{userSelect: "none", paddingTop: room ? '0px' : '75px'}}>
+      <div className='calendar' style={{userSelect: "none", paddingTop: room ? '0px' : '230px'}}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateCalendar
             disableHighlightToday
@@ -171,7 +171,7 @@ export default function Calendar() {
         </LocalizationProvider>
       </div>
 
-      {dbUser &&
+      {dbUser && room &&
         <CalendarButtons 
           dayList={dayList} 
           setDayList={setDayList} 

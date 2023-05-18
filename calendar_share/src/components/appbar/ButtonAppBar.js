@@ -245,7 +245,6 @@ export default function MenuAppBar() {
                 onClose={handleProfileClose}
               >
                 <MenuItem component={RouterLink} to="/account" onClick={handleProfileClose}>Profile</MenuItem>
-                <MenuItem component={RouterLink} to="/account" onClick={handleProfileClose}>History</MenuItem>
                 <Divider/>
                 <MenuItem onClick={() => {handleProfileClose(); handleLogout();}}>Log Out</MenuItem>
               </Menu>
