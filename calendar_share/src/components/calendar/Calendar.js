@@ -104,11 +104,30 @@ export default function Calendar() {
 
         console.log(response.data);
         setRoom(response.data);
+
+        // load user's selected days days from 
+        if (dbUser) {
+          // find user in participants and set user's dayList and stableList to user's selected days
+          const currentUser = response.data.participants.find(user => user.user_id === dbUser.user_id);
+          if (currentUser) {
+            const selectedDays = currentUser.selected_days.map(day => dayjs(day));
+            // console.log(selectedDays);
+            setDayList(selectedDays);
+            setStableList(selectedDays);
+          }
+        }
+
+        if (!dbUser) {
+          console.warn('User logged out, dayList and stableList = empty');
+          setDayList([]);
+          setStableList([]);
+        }
+
       })
       .catch(error => {
         console.error(error);
       });
-  }, [room_id]);
+  }, [room_id, dbUser]);
 
   function toggleDays(newValue){
     // console.log(newValue);
