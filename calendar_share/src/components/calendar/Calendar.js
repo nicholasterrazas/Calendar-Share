@@ -118,7 +118,7 @@ export default function Calendar() {
         }
 
         if (!dbUser) {
-          console.warn('User logged out, dayList and stableList = empty');
+          console.warn('User not logged in, dayList and stableList = empty');
           setDayList([]);
           setStableList([]);
         }
