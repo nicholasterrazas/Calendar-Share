@@ -211,7 +211,7 @@ export default function MenuAppBar() {
 
           {!auth && (
             <div>
-              <Button variant='contained' onClick={handleLogin} sx={{bgcolor: theme.palette.primary.alternate}}>Login</Button>
+              <Button variant='contained' onClick={handleLogin} sx={{bgcolor: theme.palette.primary.alternate}}>Log In</Button>
             </div>
           )}
           {auth && (

@@ -53,7 +53,7 @@ export default function CalendarTitle({room}) {
     
     return (
         <div className='calendar_title'>
-          <Box display='flex' alignItems='center' justifyContent='center' ml={5} mt={2} mb={2} >
+          <Box display='flex' alignItems='center' justifyContent='center' ml={dbUser && dbUser.user_id === room.host_id ? 5 : 0} mt={2} mb={2} >
             {
               editingTitle ? (
                 <>
@@ -78,7 +78,7 @@ export default function CalendarTitle({room}) {
                     />
 
 
-                    <Tooltip title="Save New Title">
+                    <Tooltip title="Save Title" placement="right">
                         <IconButton onClick={handleSaveClick}>
                             <Check />
                         </IconButton>
@@ -108,9 +108,11 @@ export default function CalendarTitle({room}) {
                         }}
                     />
                     {dbUser &&  dbUser.user_id === room.host_id &&
-                    <IconButton onClick={handleEditClick}>
-                    <Edit />
-                    </IconButton>}                
+                    <Tooltip title="Edit Title" placement="right">
+                      <IconButton onClick={handleEditClick}>
+                        <Edit />
+                      </IconButton>
+                    </Tooltip>}                
                 </>
               )
             }
@@ -122,11 +124,15 @@ export default function CalendarTitle({room}) {
             </Box>
           )} */}
 
-          <Box textAlign='center'>
-            <Button variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
-              Room ID: {room.room_id}
-            </Button>
-          </Box>
+            <Box textAlign='center'>
+              <Tooltip title="Copy Room ID to Clipboard" placement="right">
+
+                <Button variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
+                  Room ID: #{room.room_id}
+                </Button>
+              </Tooltip>
+
+            </Box>
 
         </div>
     );
