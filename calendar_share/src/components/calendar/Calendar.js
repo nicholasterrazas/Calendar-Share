@@ -19,8 +19,8 @@ const CustomPickersDay = styled(PickersDay, {
 })(({ theme, dayIsSelected, isDragging }) => ({
   ...(dayIsSelected && !isDragging && {
     borderRadius: 0,
-    background: `linear-gradient(to top, ${theme.palette.primary.light} 80%, ${theme.palette.primary.main} 50% )`,
-    color: theme.palette.common.white,
+    background: `linear-gradient(to top, ${theme.palette.common.white} 80%, ${theme.palette.primary.main} 50% )`,
+    boxShadow: `inset 0 0 0 1px #212121`,
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
     },
