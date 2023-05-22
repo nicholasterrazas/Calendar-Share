@@ -16,10 +16,7 @@ function UserList({ user, expanded }) {
 
   return (
     <div>
-      <ListItemButton 
-        onClick={handleClick} 
-        
-      >
+      <ListItemButton onClick={handleClick} >
         <ListItemIcon>
           <CalendarMonth />
         </ListItemIcon>

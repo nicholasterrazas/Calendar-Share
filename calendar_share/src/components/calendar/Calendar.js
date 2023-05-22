@@ -17,10 +17,18 @@ import CalendarTitle from './CalendarTitle';
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
 })(({ theme, dayIsSelected, isDragging }) => ({
+  ...({
+    
+  }),
+  ...(!dayIsSelected && {
+    borderRadius: 0,
+    // boxShadow: `inset 0 0 0 1px #eeeeee`,
+  }),
   ...(dayIsSelected && !isDragging && {
     borderRadius: 0,
     background: `linear-gradient(to top, ${theme.palette.common.white} 80%, ${theme.palette.primary.main} 50% )`,
-    boxShadow: `inset 0 0 0 1px #212121`,
+    // boxShadow: `inset 0 0 0 1px #eeeeee`,
+    // boxShadow: `inset 0 0 0 1px #212121`,
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
     },

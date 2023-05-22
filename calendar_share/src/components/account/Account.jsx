@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { useAuth } from '../firebase/authContext';
-import { Avatar, AvatarGroup, Box, Button, Container, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack } from '@mui/material';
-import { CalendarMonth } from '@mui/icons-material';
+import { Avatar, AvatarGroup, Box, Container, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Tooltip } from '@mui/material';
+import { CalendarMonth, Check, Edit } from '@mui/icons-material';
 import theme from '../theme';
 import axios from "axios";
 
 
 function UserDetails(props) {
   const { dbUser, setDbUser } = props;
+  const [editingUser, setEditingUser] = useState(false);
+
+  const handleEdit = () => {
+    setEditingUser(true);
+  };
 
   const handleChange = () =>{
 
@@ -22,53 +27,99 @@ function UserDetails(props) {
     const updatedUser = { ...dbUser, name: nameInput.value };
 
     if (nameInput.value === dbUser.name){
-      console.log('No changes made!');
+      console.log('No changes made!');    // avoid unnecessary update and http request
+      setEditingUser(false);
       return
     }
+
+    // TODO: update each user's name within the rooms as well
 
     axios
       .patch(`http://localhost:5050/users/${dbUser.user_id}`,updatedUser )
       .then((response) => {
         console.log(response);
         setDbUser(updatedUser);
+        setEditingUser(false);
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
+  const handleKeyDown = event => {
+    if (event.key === "Enter") {
+      handleChange();
+    }
+  };
+
   return (
-    <Container maxWidth='xs'>
-      <Typography variant="h4" align='center' gutterBottom pt='75px'>
-        User Details
-      </Typography>
-      <Stack spacing={3}>        
-          <TextField
-            id="name"
-            name="name"
-            label="Name"
-            fullWidth
-            autoComplete="name"
-            defaultValue={dbUser ? dbUser.name : 'Guest User'}
-          />
-          
+    <Box
+      display='flex'
+      width='100%' 
+      justifyContent='center'
+      alignItems='center'
+      ml={2}
+    >
+      <Box width='35%'>
+        <Typography variant="h4" align='center' gutterBottom pt='75px'>
+          User Details
+        </Typography>
 
-          <TextField
-            id="email"
-            name="email"
-            label="Email"
-            fullWidth
-            autoComplete="email"
-            defaultValue={dbUser ? dbUser.email : 'N/A'}
-            InputProps={{
-              readOnly: true,
-            }}
-          />   
+        <Stack spacing={3}>        
+            
+            {editingUser ? ( 
+              <TextField
+                id="name"
+                name="name"
+                label="Name"
+                fullWidth
+                autoComplete="name"
+                defaultValue={dbUser ? dbUser.name : 'Guest User'}
+                sx={{backgroundColor: '#eeeeee'}}
+                onKeyDown={handleKeyDown} // Call handleSaveClick on Enter key
+              />           
+            ) : (
+              <TextField
+                id="name"
+                name="name"
+                label="Name"
+                fullWidth
+                autoComplete="name"
+                defaultValue={dbUser ? dbUser.name : 'Guest User'}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            )}
 
-          <Button variant='contained' onClick={handleChange}>Submit Changes</Button>
-          
-      </Stack>
-    </Container>
+            <TextField
+              id="email"
+              name="email"
+              label="Email"
+              fullWidth
+              autoComplete="email"
+              defaultValue={dbUser ? dbUser.email : 'N/A'}
+              InputProps={{
+                readOnly: true,
+              }}
+            />    
+
+        </Stack>
+      </Box>
+      {editingUser ? (
+          <Tooltip title="Save Name" placement="right">
+            <IconButton onClick={handleChange} >
+                <Check />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Edit Name" placement="right">
+            <IconButton onClick={handleEdit} >
+              <Edit/>
+            </IconButton>
+          </Tooltip>  
+        )}
+    </Box>
   );
 }
 
@@ -108,7 +159,7 @@ function PreviousCalendarList(props) {
       <Box 
         sx={{ 
           // boxShadow: 1, 
-          width: '65%', 
+          width: '55%', 
           bgcolor: 'background.paper',
           alignSelf: 'center' 
         }}
@@ -163,7 +214,7 @@ function CalendarHistory({rooms}) {
     <Box 
       sx={{ 
         // boxShadow: 1, 
-        width: '65%', 
+        width: '55%', 
         bgcolor: 'background.paper',
         alignSelf: 'center' 
       }}
@@ -256,7 +307,7 @@ function AccountPage() {
               <Divider 
                 orientation='horizontal' 
                 flexItem 
-                sx={{width: '65%',
+                sx={{width: '55%',
                   alignSelf:'center'
                 }}
               />
