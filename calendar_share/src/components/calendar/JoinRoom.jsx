@@ -28,6 +28,12 @@ export default function JoinRoom() {
             })
     }
 
+    const handleKeyDown = event => {
+        if (event.key === "Enter") {
+            handleInput();
+        }
+    };
+
     useEffect(() => {
         if (roomID === ""){
             setIncorrectFormat(false);
@@ -82,6 +88,7 @@ export default function JoinRoom() {
                     <TextField 
                         value={roomID.toUpperCase()}
                         onChange={(e) => setRoomID(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         error={incorrectFormat}
                         helperText={incorrectFormat ? 'Must be 6 alphabetical letters' : null}
                         id='inputID' 

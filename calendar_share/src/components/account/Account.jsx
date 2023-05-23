@@ -112,7 +112,7 @@ function UserDetails(props) {
                 <Check />
             </IconButton>
           </Tooltip>
-        ) : (
+        ) : (dbUser &&
           <Tooltip title="Edit Name" placement="right">
             <IconButton onClick={handleEdit} >
               <Edit/>
