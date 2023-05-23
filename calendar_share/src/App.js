@@ -7,6 +7,7 @@ import Calendar from './components/calendar/Calendar';
 import Account from './components/account/Account';
 import { ThemeProvider } from '@emotion/react';
 import theme from './components/theme';
+import JoinRoom from './components/calendar/JoinRoom';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route path='/' element={<Home/>} />
               <Route path='/calendar/:room_id' element={<Calendar/>} />
               <Route path='/calendar/' element={<Calendar/>} />
+              <Route path='/join' element={<JoinRoom />} />
               <Route path='/account' element={<Account/>} />
             </Routes>
           </div>

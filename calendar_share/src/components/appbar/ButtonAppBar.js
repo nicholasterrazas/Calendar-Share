@@ -322,7 +322,7 @@ export default function MenuAppBar() {
             </ListItem>
 
             <ListItem key='join-room' disablePadding>
-              <ListItemButton href='/calendar'>
+              <ListItemButton href='/join'>
                 <ListItemIcon>
                   <TurnLeft style={{ rotate: '180deg' }} />
                 </ListItemIcon>

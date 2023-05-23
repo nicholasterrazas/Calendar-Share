@@ -96,7 +96,7 @@ const Home = () => {
             <Button onClick={createRoom} variant="contained" color="primary" size='large'>
               Create a Calendar
             </Button>
-            <Button href='/calendar' variant="outlined" color="primary" size='large'>
+            <Button href='/join' variant="outlined" color="primary" size='large'>
               Join a Calendar
             </Button>
           </Stack>}
