@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/firebase/authContext';
 import ButtonAppBar from './components/appbar/ButtonAppBar';
 import Home from './components/home/Home';
-import Calendar from './components/calendar/Calendar';
 import Account from './components/account/Account';
 import { ThemeProvider } from '@emotion/react';
 import theme from './components/theme';
 import JoinRoom from './components/calendar/JoinRoom';
+import CalendarPage from './components/calendar/CalendarPage';
 
 function App() {
   return (
@@ -18,8 +18,8 @@ function App() {
             <ButtonAppBar />
             <Routes>
               <Route path='/' element={<Home/>} />
-              <Route path='/calendar/:room_id' element={<Calendar/>} />
-              <Route path='/calendar/' element={<Calendar/>} />
+              <Route path='/calendar/:room_id' element={<CalendarPage/>} />
+              <Route path='/calendar/' element={<CalendarPage/>} />
               <Route path='/join' element={<JoinRoom />} />
               <Route path='/account' element={<Account/>} />
             </Routes>
