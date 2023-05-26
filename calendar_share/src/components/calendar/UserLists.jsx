@@ -1,4 +1,4 @@
-import { Box, Collapse, Divider, IconButton, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Stack } from "@mui/material";
+import { Avatar, Box, Collapse, Divider, IconButton, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CalendarList from "./CalendarLists";
 import { CalendarMonth, ExpandLess, ExpandMore, UnfoldLess, UnfoldMore } from "@mui/icons-material";
@@ -18,7 +18,9 @@ function UserList({ user, expanded }) {
     <div>
       <ListItemButton onClick={handleClick} >
         <ListItemIcon>
-          <CalendarMonth sx={{color: user.color}}/>
+          <Avatar sx={{bgcolor: user.color}} >
+            <CalendarMonth  />
+          </Avatar>
         </ListItemIcon>
         <ListItemText primary={`${user.name}`} />
         {open ? <ExpandLess /> : <ExpandMore />}
