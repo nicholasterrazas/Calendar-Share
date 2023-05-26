@@ -18,7 +18,7 @@ const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
 })(({ theme, dayIsSelected, isDragging }) => ({
   ...({
-    
+    // boxShadow: `inset 0 0 0 1px #eeeeee`,
   }),
   ...(!dayIsSelected && {
     borderRadius: 0,
@@ -28,20 +28,65 @@ const CustomPickersDay = styled(PickersDay, {
     borderRadius: 0,
     background: `linear-gradient(to top, ${theme.palette.common.white} 80%, ${theme.palette.primary.main} 80% )`,
     // boxShadow: `inset 0 0 0 1px #eeeeee`,
-    // boxShadow: `inset 0 0 0 1px #212121`,
+    // boxShadow: `inset 0 0 0 1px #000000`,
     '&:hover, &:focus': {
-      background: `linear-gradient(to top, #f5f5f5 80%, ${theme.palette.primary.main} 80% )`,
+      // background: `linear-gradient(to top, #f5f5f5 80%, ${theme.palette.primary.main} 80% )`,
     },
   }),
-  // ...(dayIsSelected && isDragging && {
-  //   backgroundColor: theme.palette.primary.light,
-  // }),
 }));
 
 
 function Day(props) {
-  const { day, selectedDay, dayList, isMouseDown, toggleDays, ...other } = props;
+  const { day, selectedDay, dayList, isMouseDown, toggleDays, room, dbUser, ...other } = props;
   const dayIsSelected = dayList.some((d) => day.isSame(d, 'day'));
+  
+  const colorDay = () => {
+    // make a 'color block' for each user taking up 10% of the gradient
+
+    let blocks = [];     
+    let colorEnd;
+
+    for (let i = 0; i < room.participants.length; i++){      
+      const user = room.participants[i];
+      const startPercentage = (10 * (i)) + "%";
+      const endPercentage = (10 * (i + 1)) + "%";
+
+
+      let colorBlock;
+      if (dbUser && room && user.user_id === dbUser.user_id) {
+        if (dayIsSelected) {
+        
+          const color = user.color || '#607d8b';  
+          colorBlock = `${color} ${startPercentage}, ${color} ${endPercentage}`;
+        } else {
+          colorBlock = `#FFFFFF ${startPercentage}, #FFFFFF ${endPercentage}`;
+        }
+      }
+      else {
+        if (user.selected_days.includes(dayjs(day).format('YYYY-MM-DDT04:00:00.000[Z]'))) {
+        
+          const color = user.color || '#607d8b';  
+          colorBlock = `${color} ${startPercentage}, ${color} ${endPercentage}`;
+        } else {
+          colorBlock = `#FFFFFF ${startPercentage}, #FFFFFF ${endPercentage}`;
+        }
+      }
+
+      // colors are aranged top to bottom 
+      blocks.push(colorBlock);
+      colorEnd = endPercentage;
+    }
+
+    if (room.participants.length !== 10){
+      const whiteBlock = `#FFFFFF ${colorEnd}`;
+      blocks.push(whiteBlock);  
+    }
+    
+    const arrangement = blocks.join(', ');
+    const gradient = `linear-gradient(to bottom, ${arrangement} )`;
+        
+    return gradient;
+  }
 
   if (selectedDay == null) {
     return <PickersDay day={day} sx={{ px: 2.5, mx: 0 }} {...other} />;
@@ -68,6 +113,7 @@ function Day(props) {
       dayIsSelected={dayIsSelected}
       onMouseOver={handleMouseOver}
       onMouseDown={handleMouseDown}
+      style={room && { background: colorDay() }}
     />
   );
 }
@@ -192,6 +238,8 @@ export default function Calendar() {
                 dayList,
                 isMouseDown,
                 toggleDays,
+                room,
+                dbUser,
               },
             }}
           />
