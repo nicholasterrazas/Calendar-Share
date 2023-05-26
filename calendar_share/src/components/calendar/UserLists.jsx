@@ -18,7 +18,7 @@ function UserList({ user, expanded }) {
     <div>
       <ListItemButton onClick={handleClick} >
         <ListItemIcon>
-          <CalendarMonth />
+          <CalendarMonth sx={{color: user.color}}/>
         </ListItemIcon>
         <ListItemText primary={`${user.name}`} />
         {open ? <ExpandLess /> : <ExpandMore />}
