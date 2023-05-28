@@ -53,13 +53,19 @@ export default function CalendarTitle({room}) {
     
     return (
         <div className='calendar_title'>
-          <Box display='flex' alignItems='center' justifyContent='center' ml={dbUser && dbUser.user_id === room.host_id ? 5 : 0} mt={2} mb={2} >
+          <Box 
+            display='flex' 
+            alignItems='center' 
+            justifyContent='center' 
+            ml={dbUser && dbUser.user_id === room.host_id ? 5 : 0} 
+            mt={2} 
+            mb={2} 
+          >
             {
               editingTitle ? (
                 <>
                     <TextField
                     sx={{
-                        paddingTop: '70px',
                         '& .MuiInputBase-root': {
                         fontSize: '3rem',
                         },
@@ -67,13 +73,11 @@ export default function CalendarTitle({room}) {
                         padding: '6px 0', 
                         textAlign: 'center',
                         },
-                        // width: '80%'
                     }}
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     onKeyDown={handleKeyDown} // Call handleSaveClick on Enter key
                     autoFocus
-                    fullWidth
                     variant='filled'
                     />
 
@@ -89,7 +93,6 @@ export default function CalendarTitle({room}) {
                 <>
                     <TextField
                         sx={{
-                            paddingTop: '70px',
                             pr: '0px',
                             '& .MuiInputBase-root': {
                             fontSize: '3rem',
@@ -98,10 +101,8 @@ export default function CalendarTitle({room}) {
                               padding: '6px 0', 
                             textAlign: 'center',
                             },
-                            // width: '80%'
                         }}
                         value={newTitle}
-                        fullWidth
                         variant='standard'
                         InputProps={{
                             readOnly: true

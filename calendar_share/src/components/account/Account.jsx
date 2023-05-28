@@ -250,10 +250,11 @@ function CalendarHistory({rooms}) {
             <AvatarGroup max={4}>
               {room.participants.map((user) => (
                 <Avatar 
-                  key={user.user_id} 
-                  alt={user.name} 
-                  src={user.photoURL || 'https://examples.org/broken-pic'}
-                   />
+                  key={user.user_id}
+                  sx={{bgcolor: user.color}}
+                >
+                  {user.name.slice(0,1)}
+                </Avatar>
               ))}
             </AvatarGroup>
 

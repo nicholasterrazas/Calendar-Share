@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Calendar from "./Calendar";
 import { Box, Collapse, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { blue, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightGreen, orange, pink, red, yellow } from "@mui/material/colors";
-import { Brush, ExpandLess, ExpandMore, FormatColorReset, Palette } from "@mui/icons-material";
+import { Brush, Colorize, ExpandLess, ExpandMore, FormatColorReset, WaterDrop } from "@mui/icons-material";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../firebase/authContext";
+import axios from "axios";
+import dayjs from 'dayjs';
+import CalendarTitle from "./CalendarTitle";
+import UserLists from "./UserLists";
+import CalendarButtons from "./CalendarButtons";
+
 
 const palette = [
 
@@ -10,7 +18,7 @@ const palette = [
     {name: 'Black', color: grey[900]}, 
     {name: 'Grey', color: grey[600]}, 
     {name: 'Brown', color: brown[700]},
-    {name: 'Red', color: red[800]}, 
+    {name: 'Red', color: red['A700']}, 
     {name: 'Orange', color: orange[700]}, 
     {name: 'Yellow', color: yellow[600]},
     {name: 'Green', color: green[800]},
@@ -26,7 +34,7 @@ const palette = [
     {name: 'Rose', color: pink[200]}, 
 
     // Neon Colors
-    {name: 'Pink', color: pink[400]},
+    {name: 'Pink', color: pink['A200']},
     {name: 'Cyan', color: cyan['A400']},
     {name: 'Lime', color: lightGreen['A200']}, 
 
@@ -35,28 +43,28 @@ const palette = [
 
 function ColorList({setColor}) {
     return (
-        <List>
+        <List sx={{textAlign: 'center'}}>
             {palette.map(colorElement => 
-                <ListItemButton 
+                <ListItemButton key={colorElement.name}
                     onClick={() => setColor(colorElement) }
                     sx={{ 
-                            bgcolor: colorElement.color 
-                        }}  
+                        bgcolor: colorElement.color,
+                    }}  
                 >
 
-                <ListItemIcon>
-                    {colorElement.name === 'Black' ? (
-                        <Brush sx={{color: '#fafafa'}}/>
-                    ) : (
-                        <Brush sx={{color: '#212121'}}/>
-                    ) }
-                </ListItemIcon>
+                    <ListItemIcon>
+                        {colorElement.name === 'Black' ? (
+                            <Brush sx={{color: '#fafafa'}}/>
+                        ) : (
+                            <Brush sx={{color: '#212121'}}/>
+                        ) }
+                    </ListItemIcon>
 
-                {colorElement.name === 'Black' ? (
-                    <ListItemText primary={colorElement.name} sx={{color:"#fafafa"}}/>
-                ) : (
-                    <ListItemText primary={colorElement.name}/>
-                ) }
+                    {colorElement.name === 'Black' ? (
+                        <ListItemText primary={colorElement.name} sx={{color:"#fafafa"}}/>
+                    ) : (
+                        <ListItemText primary={colorElement.name}/>
+                    ) }
 
                 </ListItemButton>    
             )}
@@ -76,7 +84,7 @@ function ColorList({setColor}) {
 
 
 function ColorPicker() {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const [color, setColor] = useState(null);
 
     const handleClick = () => {
@@ -84,13 +92,13 @@ function ColorPicker() {
       };    
 
     return (
-        <List sx={{pt: '130px'}} >
+        <List>
             
-            <ListItemButton dense onClick ={handleClick} >
+            <ListItemButton onClick ={handleClick} >
                 <ListItemIcon>
-                    {color && <Palette sx={{color: color}}/>}
+                    {color ? <WaterDrop sx={{color: color}}/> : <Colorize sx={{color: '#212121'}}/>}
                 </ListItemIcon>
-                <ListItemText primary={'Choose Color'} />
+                <ListItemText primary={'Change Color'} />
                 {open ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>            
 
@@ -103,33 +111,168 @@ function ColorPicker() {
 }
 
 export default function CalendarPage(){
+    const { room_id } = useParams();    
+    const { dbUser, setDbUser } = useAuth();
+    const [room, setRoom] = useState(null);
+    const [dayList, setDayList] = useState([]);
+    const [stableList, setStableList] = useState([]);
+    const [highlighted, setHighlighted] = useState([]);
+
+
+    useEffect(() => {
+        if (!room_id){
+          console.info('No id provided');
+          return
+        }
+        console.log(`retrieving room: ${room_id}`)
+        // fetch room document from backend API
+        axios.get(`http://localhost:5050/rooms/${room_id}`)
+        .then(response => {
+        // set room state to room document
+        if (response.data === 'Invalid Room ID'){
+            console.error('Invalid Room ID!');
+            return;
+        }
+
+        if (response.data === 'Not found'){
+            console.error('Invalid Room ID');
+            return
+        }
+
+        console.log(response.data);
+        setRoom(response.data);
+
+        // load user's selected days days from 
+        if (dbUser) {
+            // find user in participants and set user's dayList and stableList to user's selected days
+            const currentUser = response.data.participants.find(user => user.user_id === dbUser.user_id);
+            if (currentUser) {
+            const selectedDays = currentUser.selected_days.map(day => dayjs(day));
+            // console.log(selectedDays);
+            setDayList(selectedDays);
+            setStableList(selectedDays);
+            }
+        }
+
+        if (!dbUser) {
+            console.warn('User not logged in, dayList and stableList = empty');
+            setDayList([]);
+            setStableList([]);
+        }
+
+        })
+        .catch(error => {
+        console.error(error);
+        });
+    }, [room_id, dbUser]);
+
+
+    useEffect(() => {
+        if (!room) {
+            
+            return;
+        }
+
+        if (highlighted.length){
+            console.log('Highlighted users already created');
+            return;
+        }
+
+        const highlightedUsers = room.participants.map(user => {
+            return { 
+                user_id: user.user_id, 
+                name: user.name, 
+                color: user.color,
+                highlighted: true
+            };
+        });        
+        setHighlighted(highlightedUsers);
+
+        // console.log(highlightedUsers);
+
+    }, [room])
+
 
     return (
         <Box
-            display='flex'
-            justifyContent='center'
-            alignItems='center'
+            sx={{
+                pl: '250px',
+
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignContent: 'flex-start',    
+            }}
         >   
             <Box
-                justifyContent='flex-start'
-                alignContent='center'
                 sx={{
-                    pl: '250px',
+                    pt: '150px',
+                    minWidth: '12%',
+
+                    justifyContent: 'center',
+                    alignContent: 'flex-start',
                     flexShrink: 1,
                 }}
             >
-                <ColorPicker />        
-            </Box>         
+                {dbUser && room && <ColorPicker />}        
+            </Box>
 
             <Box
-                justifyContent='flex-end'
-                alignContent='center'
-                width='100%'
                 sx={{
-                    flexGrow: 1
+                    pt: '70px',
+                
+                    display: 'flex',
+                    flexDirection: 'column',
+                    
+                    // flexGrow: 1,
                 }}
             >
-                <Calendar />
+                {room && <CalendarTitle room={room} />}
+                
+                <Calendar 
+                    room={room}
+                    setRoom={setRoom}
+                    room_id={room_id}
+                    dbUser={dbUser}
+                    setDbUser={setDbUser}
+                    dayList={dayList}
+                    setDayList={setDayList}
+                    stableList={stableList}
+                    setStableList={setStableList}
+                    highlighted={highlighted}
+                />
+                
+                {dbUser && room &&
+                    <CalendarButtons 
+                        dayList={dayList} 
+                        setDayList={setDayList} 
+                        stableList={stableList} 
+                        setStableList={setStableList} 
+                        room_id={room_id}  
+                        room={room}
+                        setRoom={setRoom} 
+                        dbUser={dbUser}
+                        setDbUser={setDbUser}
+                    /> 
+                }
+                
+                
+
+            </Box>
+            <Box
+                sx={{
+                    pt: '150px',
+
+                    width: '55%',
+                    maxWidth: '660px',
+                    justifySelf: 'flex-start',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    alignSelf: 'flex-start',                        
+
+                }}    
+            >
+                {room && <UserLists className='user_lists' users={room.participants} highlighted={highlighted} setHighlighted={setHighlighted}  />}
             </Box>
         </Box>
     );

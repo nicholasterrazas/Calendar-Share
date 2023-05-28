@@ -99,29 +99,29 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
 
   return(
     <Stack direction="row" spacing={2} justifyContent="center">
-    <Button 
-      variant="outlined" 
-      endIcon={<Clear />}
-      onClick={handleClear}
-      disabled={!dayList.length}  
-    >
-      Clear Calendar
-    </Button>
-    <Button 
-      variant="contained" 
-      endIcon={<CloudDownload />}
-      onClick={handleSave}
-    >
-      Save Calendar
-    </Button>
-    <Button
-      variant="outlined"
-      endIcon={<Sync />}
-      onClick={handleRestore}
-      disabled={!stableList.length || stableList === dayList}
-    >
-      Restore Calendar
-    </Button>  
-  </Stack>
+      <Button 
+        variant="outlined" 
+        endIcon={<Clear />}
+        onClick={handleClear}
+        disabled={!dayList.length}  
+      >
+        Clear Calendar
+      </Button>
+      <Button 
+        variant="contained" 
+        endIcon={<CloudDownload />}
+        onClick={handleSave}
+      >
+        Save Calendar
+      </Button>
+      <Button
+        variant="outlined"
+        endIcon={<Sync />}
+        onClick={handleRestore}
+        disabled={!stableList.length || stableList === dayList}
+      >
+        Restore Calendar
+      </Button>  
+    </Stack>
   );
 }
