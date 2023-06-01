@@ -3,10 +3,16 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../firebase/authContext';
 import axios from "axios";
+import { palette } from '../calendar/CalendarPage';
 
 const Home = () => {
   const { dbUser, setDbUser } = useAuth();  
   const navigate = useNavigate();
+
+  const chooseColor = () => {
+    const randomIndex = Math.floor(Math.random() * palette.length);
+    return palette[randomIndex].color;
+  };
 
   const createRoom = () => {
     console.log('creating room');
@@ -19,7 +25,8 @@ const Home = () => {
         {
           user_id: dbUser.user_id,
           name: dbUser.name,
-          selected_days: []
+          selected_days: [],
+          color: chooseColor(),
         }
       ]
     }

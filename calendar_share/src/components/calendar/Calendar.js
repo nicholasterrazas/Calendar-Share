@@ -12,11 +12,10 @@ const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'dayIsSelected',
 })(({ theme, dayIsSelected, isDragging }) => ({
   ...({
-    // boxShadow: `inset 0 0 0 1px #eeeeee`,
-  }),
-  ...(!dayIsSelected && {
     borderRadius: 0,
     // boxShadow: `inset 0 0 0 1px #eeeeee`,
+    boxShadow: `inset 0 -1px 0 0 #eeeeee`, // Updated boxShadow property
+    color: '#212121'
   }),
   ...(dayIsSelected && !isDragging && {
     borderRadius: 0,
@@ -57,7 +56,7 @@ function Day(props) {
 
 
       let colorBlock;
-      if (dbUser && room && user.user_id === dbUser.user_id && isHighlighted(user)) {
+      if (isHighlighted(user) && dbUser && room && user.user_id === dbUser.user_id) {
         if (dayIsSelected) {
         
           const color = user.color || '#607d8b';  
@@ -67,7 +66,7 @@ function Day(props) {
         }
       }
       else {
-        if (user.selected_days.includes(dayjs(day).format('YYYY-MM-DDT04:00:00.000[Z]')) && isHighlighted(user)) {
+        if (isHighlighted(user) && user.selected_days.includes(dayjs(day).format('YYYY-MM-DDT04:00:00.000[Z]'))) {
         
           const color = user.color || '#607d8b';  
           colorBlock = `${color} ${startPercentage}, ${color} ${endPercentage}`;

@@ -12,7 +12,7 @@ import UserLists from "./UserLists";
 import CalendarButtons from "./CalendarButtons";
 
 
-const palette = [
+export const palette = [
 
     // Base Colors
     {name: 'Black', color: grey[900]}, 
@@ -223,7 +223,7 @@ export default function CalendarPage(){
                 
                     display: 'flex',
                     flexDirection: 'column',
-                    
+
                     // flexGrow: 1,
                 }}
             >
@@ -253,6 +253,7 @@ export default function CalendarPage(){
                         setRoom={setRoom} 
                         dbUser={dbUser}
                         setDbUser={setDbUser}
+                        palette={palette}
                     /> 
                 }
                 

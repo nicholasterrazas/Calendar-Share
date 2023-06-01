@@ -13,6 +13,7 @@ import { Avatar, Button, Divider, Drawer, List, ListItem, ListItemButton, ListIt
 import axios from 'axios';
 import theme from '../theme';
 import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from '@mui/icons-material';
+import { palette } from '../calendar/CalendarPage';
 
 export default function MenuAppBar() {
   const { currentUser, setDbUser, dbUser, rooms, setRooms } = useAuth();
@@ -67,6 +68,11 @@ export default function MenuAppBar() {
 
     console.log('creating room');
 
+    const chooseColor = () => {
+      const randomIndex = Math.floor(Math.random() * palette.length);
+      return palette[randomIndex].color;
+    };
+
     // create room
     const room = {
       title: `${dbUser.name}'s Room`,
@@ -75,7 +81,8 @@ export default function MenuAppBar() {
         {
           user_id: dbUser.user_id,
           name: dbUser.name,
-          selected_days: []
+          selected_days: [],
+          color: chooseColor(),
         }
       ]
     }

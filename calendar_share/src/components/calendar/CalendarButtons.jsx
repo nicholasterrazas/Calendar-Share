@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button, Stack } from "@mui/material";
 import { Clear, CloudDownload, Sync } from "@mui/icons-material";
 
-export default function CalendarButtons({dayList, setDayList, stableList, setStableList, room_id, room, setRoom, dbUser, setDbUser}){
+export default function CalendarButtons({dayList, setDayList, stableList, setStableList, room_id, room, setRoom, dbUser, setDbUser, palette}){
   
   const handleClear = () => {
     console.log('Clearing calendar: ');
@@ -43,11 +43,19 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
       })
     };
 
+    const chooseColor = () => {
+      const usedColors = room.participants.map(participant => participant.color);
+      const availableColors = palette.filter(color => !usedColors.includes(color));
+      const randomIndex = Math.floor(Math.random() * availableColors.length);
+      return availableColors[randomIndex].color;
+    };
+
     if (!foundUser){
       const guest = {
         user_id: dbUser.user_id,
         name: dbUser.name,
-        selected_days: dayList
+        selected_days: dayList,
+        color: chooseColor(),
       }
       
       const newParticipants = room.participants;
