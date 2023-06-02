@@ -43,42 +43,6 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
       })
     };
 
-    const chooseColor = () => {
-      const usedColors = room.participants.map(participant => participant.color);
-      const availableColors = palette.filter(color => !usedColors.includes(color));
-      const randomIndex = Math.floor(Math.random() * availableColors.length);
-      return availableColors[randomIndex].color;
-    };
-
-    if (!foundUser){
-      const guest = {
-        user_id: dbUser.user_id,
-        name: dbUser.name,
-        selected_days: dayList,
-        color: chooseColor(),
-      }
-      
-      const newParticipants = room.participants;
-      newParticipants.push(guest);
-
-      updatedRoom = { ...room, participants: newParticipants}
-
-      // add room to user's list 
-      const guestRooms = dbUser.rooms;
-      guestRooms.push(room_id);
-      const updatedUser = { ...dbUser, rooms: guestRooms }
-
-      axios
-        .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
-        .then((response) => {
-          console.log(response);
-          setDbUser(updatedUser);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-
 
     // update user's selected days
     console.log('updatedRoom: ');

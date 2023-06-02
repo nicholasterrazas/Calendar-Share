@@ -168,15 +168,77 @@ export default function CalendarPage(){
 
 
     useEffect(() => {
+        if (!room || !dbUser) {
+          return;
+        }
+    
+        const chooseColor = () => {
+            const usedColors = room.participants.map(participant => participant.color);
+            const availableColors = palette.filter(color => !usedColors.includes(color));
+            const randomIndex = Math.floor(Math.random() * availableColors.length);
+            return availableColors[randomIndex].color;
+        };
+
+        console.log('Retrieving user data for room:', room_id);
+    
+        // Check if the user is already in the room
+        const currentUser = room.participants.find((user) => user.user_id === dbUser.user_id);
+    
+        if (currentUser) {
+          const selectedDays = currentUser.selected_days.map((day) => dayjs(day));
+          setDayList(selectedDays);
+          setStableList(selectedDays);
+        } else {
+          console.log('User is not in the room, adding to the room...');
+          const guest = {
+            user_id: dbUser.user_id,
+            name: dbUser.name,
+            selected_days: [],
+            color: chooseColor(),
+          };
+    
+          const updatedRoom = {
+            ...room,
+            participants: [...room.participants, guest],
+          };
+    
+          axios
+            .patch(`http://localhost:5050/rooms/${room_id}`, updatedRoom)
+            .then((response) => {
+              console.log(response);
+              setRoom(updatedRoom);
+    
+              // Add room to user's list
+              const guestRooms = dbUser.rooms;
+              guestRooms.push(room_id);
+              const updatedUser = { ...dbUser, rooms: guestRooms };
+    
+              axios
+                .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+                .then((response) => {
+                  console.log(response);
+                  setDbUser(updatedUser);
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      }, [room, dbUser]);
+
+    useEffect(() => {
         if (!room) {
             
             return;
         }
 
-        if (highlighted.length){
-            console.log('Highlighted users already created');
-            return;
-        }
+        // if (highlighted.length){
+        //     console.log('Highlighted users already created');
+        //     return;
+        // }
 
         const highlightedUsers = room.participants.map(user => {
             return { 
