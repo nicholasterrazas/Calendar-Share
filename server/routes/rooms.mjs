@@ -81,13 +81,37 @@ router.patch("/:room_id", async (req, res) => {
 });
 
 // This section will help you delete a room
-router.delete("/:id", async (req, res) => {
-  const query = { _id: new ObjectId(req.params.id) };
-
-  const collection = db.collection("rooms");
-  let result = await collection.deleteOne(query);
-
-  res.send(result).status(200);
+router.delete("/:room_id", async (req, res) => {
+  try {
+    const roomId = req.params.room_id;
+  
+    // Find the room document with the specified room_id
+    const roomCollection = await db.collection("rooms");
+    const room = await roomCollection.findOne({ room_id: roomId });
+  
+    if (!room) {
+      res.status(404).send("Room not found");
+      return;
+    }
+  
+    // Get the user_ids of participants from the room document
+    const participantIds = room.participants;
+  
+    // Update each participant's document to remove the room from their rooms list
+    const userCollection = await db.collection("users");
+    await userCollection.updateMany(
+      { user_id: { $in: participantIds } },
+      { $pull: { rooms: roomId } }
+    );
+  
+    // Delete the room document
+    await roomCollection.deleteOne({ room_id: roomId });
+  
+    res.status(200).send("Room deleted successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 export default router;

@@ -23,7 +23,7 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
     // SAVE SELECTED DAYS TO ROOM DB
     console.log(`updating room ${room_id}`);
     console.log(room);
-    let foundUser = false;
+    // let foundUser = false;
     let updatedRoom = { 
       ...room,
       participants: room.participants.map(participant => {
@@ -31,7 +31,7 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
         // console.log(dbUser.user_id);
         if (participant.user_id === dbUser.user_id) {
           // Update the selected days of the current user
-          foundUser = true;
+          // foundUser = true;
           return {
             ...participant,
             selected_days: dayList

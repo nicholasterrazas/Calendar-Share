@@ -142,29 +142,12 @@ export default function CalendarPage(){
         console.log(response.data);
         setRoom(response.data);
 
-        // load user's selected days days from 
-        if (dbUser) {
-            // find user in participants and set user's dayList and stableList to user's selected days
-            const currentUser = response.data.participants.find(user => user.user_id === dbUser.user_id);
-            if (currentUser) {
-            const selectedDays = currentUser.selected_days.map(day => dayjs(day));
-            // console.log(selectedDays);
-            setDayList(selectedDays);
-            setStableList(selectedDays);
-            }
-        }
-
-        if (!dbUser) {
-            console.warn('User not logged in, dayList and stableList = empty');
-            setDayList([]);
-            setStableList([]);
-        }
 
         })
         .catch(error => {
         console.error(error);
         });
-    }, [room_id, dbUser]);
+    }, [room_id]);
 
 
     useEffect(() => {
