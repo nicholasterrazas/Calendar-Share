@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import CalendarTitle from "./CalendarTitle";
 import UserLists from "./UserLists";
 import CalendarButtons from "./CalendarButtons";
+import ParticipantDetails from "./RoomProfile";
 
 
 export const palette = [
@@ -241,35 +242,30 @@ export default function CalendarPage(){
     return (
         <Box
             sx={{
-                pl: '250px',
-
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignContent: 'flex-start',    
             }}
         >   
             <Box
-                sx={{
-                    pt: '150px',
-                    minWidth: '12%',
-
-                    justifyContent: 'center',
-                    alignContent: 'flex-start',
-                    flexShrink: 1,
-                }}
+                pt='150px'
+                width='25%'
             >
-                {dbUser && room && <ColorPicker />}        
+                {dbUser && room && 
+                    <ParticipantDetails 
+                        room={room} 
+                        setRoom={setRoom}
+                        dbUser={dbUser}
+                        setDbUser={setDbUser}
+                    />
+                }        
             </Box>
 
             <Box
-                sx={{
-                    pt: '70px',
-                
-                    display: 'flex',
-                    flexDirection: 'column',
+                pt='70px'
+                width='50%'
 
-                    // flexGrow: 1,
+                sx={{
+                    // boxShadow:'1',
                 }}
             >
                 {room && <CalendarTitle room={room} />}
@@ -306,19 +302,16 @@ export default function CalendarPage(){
 
             </Box>
             <Box
-                sx={{
-                    pt: '150px',
-
-                    width: '55%',
-                    maxWidth: '660px',
-                    justifySelf: 'flex-start',
-                    justifyContent: 'flex-start',
-                    alignContent: 'flex-start',
-                    alignSelf: 'flex-start',                        
-
-                }}    
+                pt='150px'
+                width='25%'
             >
-                {room && <UserLists className='user_lists' users={room.participants} highlighted={highlighted} setHighlighted={setHighlighted}  />}
+                {room && 
+                    <UserLists 
+                        className='user_lists' 
+                        users={room.participants} 
+                        highlighted={highlighted} 
+                        setHighlighted={setHighlighted}  
+                    />}
             </Box>
         </Box>
     );

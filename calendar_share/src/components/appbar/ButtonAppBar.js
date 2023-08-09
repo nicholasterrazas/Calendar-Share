@@ -12,7 +12,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/
 import { Avatar, Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import axios from 'axios';
 import theme from '../theme';
-import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from '@mui/icons-material';
+import { AccountBoxSharp, Add, CalendarMonth, CalendarToday, Group, Home, TurnLeft } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { palette } from '../calendar/CalendarPage';
 
 export default function MenuAppBar() {
@@ -21,7 +22,13 @@ export default function MenuAppBar() {
   const [profileEl, setProfileEl] = React.useState(null);
   const [user, setUser] = React.useState(currentUser);
   const navigate = useNavigate();
+  
+  const [drawerOpen, setDrawerOpen] = React.useState(false)
   const drawerWidth = 240;
+
+  const handleDrawerToggle = () => {
+    setDrawerOpen((prevState) => !prevState);
+  };
 
   // Load user from database
   React.useEffect(() => {
@@ -202,9 +209,21 @@ export default function MenuAppBar() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position='fixed' sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}>
+    <Box sx={{ display: 'flex' }}>
+      <AppBar position='fixed' 
+        // sx={{ zIndex: (theme) => theme.zIndex.drawer + 1}}
+      >
         <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            // sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
           <Typography variant="h6" component="div"  sx={{ flexGrow: 1 }}>
             Calendar Share
           </Typography>
@@ -260,15 +279,18 @@ export default function MenuAppBar() {
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="permanent"
+        variant="temporary"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true, }}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
         }}
       >
-        <Toolbar />
-        <Box 
+        <Box
+          onClick={handleDrawerToggle}
           sx={{ 
             overflow: 'auto', 
             // bgcolor: '#eeeeee' 
