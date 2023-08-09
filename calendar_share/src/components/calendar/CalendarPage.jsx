@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Calendar from "./Calendar";
-import { Box, Collapse, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Box } from "@mui/material";
 import { blue, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightGreen, orange, pink, red, yellow } from "@mui/material/colors";
-import { Brush, Colorize, ExpandLess, ExpandMore, FormatColorReset, WaterDrop } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../firebase/authContext";
 import axios from "axios";
@@ -42,74 +41,6 @@ export const palette = [
 ];
 
 
-function ColorList({setColor}) {
-    return (
-        <List sx={{textAlign: 'center'}}>
-            {palette.map(colorElement => 
-                <ListItemButton key={colorElement.name}
-                    onClick={() => setColor(colorElement) }
-                    sx={{ 
-                        bgcolor: colorElement.color,
-                    }}  
-                >
-
-                    <ListItemIcon>
-                        {colorElement.name === 'Black' ? (
-                            <Brush sx={{color: '#fafafa'}}/>
-                        ) : (
-                            <Brush sx={{color: '#212121'}}/>
-                        ) }
-                    </ListItemIcon>
-
-                    {colorElement.name === 'Black' ? (
-                        <ListItemText primary={colorElement.name} sx={{color:"#fafafa"}}/>
-                    ) : (
-                        <ListItemText primary={colorElement.name}/>
-                    ) }
-
-                </ListItemButton>    
-            )}
-
-            <ListItemButton 
-                onClick={() => setColor(null) }
-            >
-                <ListItemIcon>
-                    <FormatColorReset sx={{color: '#212121'}}/>
-                </ListItemIcon>
-                <ListItemText primary={'No Color'} />
-            </ListItemButton>
-        </List>
-    );
-}
-
-
-
-function ColorPicker() {
-    const [open, setOpen] = useState(false);
-    const [color, setColor] = useState(null);
-
-    const handleClick = () => {
-        setOpen(!open);
-      };    
-
-    return (
-        <List>
-            
-            <ListItemButton onClick ={handleClick} >
-                <ListItemIcon>
-                    {color ? <WaterDrop sx={{color: color}}/> : <Colorize sx={{color: '#212121'}}/>}
-                </ListItemIcon>
-                <ListItemText primary={'Change Color'} />
-                {open ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>            
-
-            <Collapse in={open} timeout="auto" unmountOnExit>
-                <ColorList setColor={setColor} />
-            </Collapse>
-
-        </List>
-    );
-}
 
 export default function CalendarPage(){
     const { room_id } = useParams();    

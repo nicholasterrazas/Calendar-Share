@@ -12,7 +12,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/
 import { Avatar, Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import axios from 'axios';
 import theme from '../theme';
-import { AccountBoxSharp, Add, CalendarMonth, CalendarToday, Group, Home, TurnLeft } from '@mui/icons-material';
+import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { palette } from '../calendar/CalendarPage';
 
