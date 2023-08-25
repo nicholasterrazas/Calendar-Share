@@ -2,7 +2,6 @@ import { Backdrop, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select
 import React, { useState } from "react"
 import axios from "axios";
 import { blue, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightGreen, orange, pink, red, yellow } from "@mui/material/colors";
-import theme from "../theme";
 
 const palette = [
 

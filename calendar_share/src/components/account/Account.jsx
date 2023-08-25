@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { useAuth } from '../firebase/authContext';
 import { Avatar, AvatarGroup, Box, Container, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Tooltip } from '@mui/material';
-import { CalendarMonth, Check, Edit } from '@mui/icons-material';
+import { CalendarMonth, Check, Delete, Edit } from '@mui/icons-material';
 import theme from '../theme';
 import axios from "axios";
 
@@ -207,9 +207,21 @@ function PreviousCalendarList(props) {
   );
 }
 
-function CalendarHistory({rooms}) {
+function CalendarHistory({rooms, setRooms}) {
   
-  
+  const handleDeleteRoom = (room_id) => {
+
+    axios.delete(`http://localhost:5050/rooms/${room_id}`)
+    .then(response => {
+      console.log(response)
+      setRooms((prevRooms) => prevRooms.filter((room) => room.room_id !== room_id))
+    })
+    .catch(error => {
+      console.error(error);
+    })
+
+  };
+
   return (
     <Box 
       sx={{ 
@@ -228,7 +240,14 @@ function CalendarHistory({rooms}) {
       </Typography>
       <List>
         {rooms.map((room) => (
-          <ListItem key={room.room_id}>
+          <ListItem 
+            key={room.room_id}
+            secondaryAction={
+              <IconButton onClick={() => handleDeleteRoom(room.room_id)} >
+                <Delete />
+              </IconButton>
+            }  
+          >
             <ListItemButton href={`/calendar/${room.room_id}`}>
               <ListItemAvatar>
                 <Avatar 
@@ -268,7 +287,7 @@ function CalendarHistory({rooms}) {
 
 
 function AccountPage() {
-  const { dbUser, setDbUser, rooms } = useAuth();  
+  const { dbUser, setDbUser, rooms, setRooms } = useAuth();  
 
   const exampleList = [
     { id: 1, name: 'School' },
@@ -314,7 +333,7 @@ function AccountPage() {
               />
               
               {dbUser && rooms &&
-              <CalendarHistory rooms={rooms} />}
+              <CalendarHistory rooms={rooms} setRooms={setRooms} />}
 
               {!dbUser &&  
               <PreviousCalendarList list={exampleList} />}

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Button, Stack } from "@mui/material";
 import { Clear, CloudDownload, Sync } from "@mui/icons-material";
 
-export default function CalendarButtons({dayList, setDayList, stableList, setStableList, room_id, room, setRoom, dbUser, setDbUser}){
+export default function CalendarButtons({dayList, setDayList, stableList, setStableList, room_id, room, setRoom, dbUser, setDbUser, palette}){
   
   const handleClear = () => {
     console.log('Clearing calendar: ');
@@ -23,7 +23,7 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
     // SAVE SELECTED DAYS TO ROOM DB
     console.log(`updating room ${room_id}`);
     console.log(room);
-    let foundUser = false;
+    // let foundUser = false;
     let updatedRoom = { 
       ...room,
       participants: room.participants.map(participant => {
@@ -31,7 +31,7 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
         // console.log(dbUser.user_id);
         if (participant.user_id === dbUser.user_id) {
           // Update the selected days of the current user
-          foundUser = true;
+          // foundUser = true;
           return {
             ...participant,
             selected_days: dayList
@@ -42,34 +42,6 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
         }
       })
     };
-
-    if (!foundUser){
-      const guest = {
-        user_id: dbUser.user_id,
-        name: dbUser.name,
-        selected_days: dayList
-      }
-      
-      const newParticipants = room.participants;
-      newParticipants.push(guest);
-
-      updatedRoom = { ...room, participants: newParticipants}
-
-      // add room to user's list 
-      const guestRooms = dbUser.rooms;
-      guestRooms.push(room_id);
-      const updatedUser = { ...dbUser, rooms: guestRooms }
-
-      axios
-        .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
-        .then((response) => {
-          console.log(response);
-          setDbUser(updatedUser);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
 
 
     // update user's selected days
