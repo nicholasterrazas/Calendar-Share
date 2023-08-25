@@ -143,14 +143,17 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
                 <Paper
                     onClick={e => e.stopPropagation()}
                     sx={{
-                        width: '35%',
-                        height: '45%',
+                        width: 400,
+                        height: 250,
                     }}
                 >
                     <Stack 
                         spacing={2}
                         sx={{ 
-                            alignItems: 'center', 
+                            alignItems: 'center',
+                            // mx: 0.75,
+                            width: 400,
+                            height: 100,
                         }}    
                     >
                         <Typography>
@@ -162,12 +165,12 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
                             name="new-name"
                             label="New Name"
                             variant="outlined"
-                            sx={{ width: '50%', }}
+                            sx={{ width: '65%', }}
                         />
 
                         <FormControl 
                             sx={{
-                                width: '50%',
+                                width: '65%',
                             }} 
                         >
                             <InputLabel 
@@ -205,7 +208,7 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
 
                         <Button
                             variant='contained' 
-                            sx={{ width: '50%' }} 
+                            sx={{ width: '65%' }} 
                             onClick={handleSubmit}
                         >
                             Save Changes

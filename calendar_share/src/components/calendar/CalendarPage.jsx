@@ -203,7 +203,8 @@ export default function CalendarPage(){
         >   
             <Box
                 pt='150px'
-                width='25%'
+                width='24%'
+                boxShadow={1}
             >
                 {dbUser && room && 
                     <ParticipantDetails 
@@ -218,10 +219,7 @@ export default function CalendarPage(){
             <Box
                 pt='70px'
                 width='50%'
-
-                sx={{
-                    // boxShadow:'1',
-                }}
+                boxShadow={1}
             >
                 {room && <CalendarTitle room={room} />}
                 
@@ -257,7 +255,8 @@ export default function CalendarPage(){
             </Box>
             <Box
                 pt='150px'
-                width='25%'
+                width='26%'
+                boxShadow={1}
             >
                 {room && 
                     <UserLists 
