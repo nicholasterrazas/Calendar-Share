@@ -1,4 +1,4 @@
-import { Backdrop, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from "@mui/material"
+import { Alert, Backdrop, Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Snackbar, Stack, TextField, Typography } from "@mui/material"
 import React, { useState } from "react"
 import axios from "axios";
 import { blue, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightGreen, orange, pink, red, yellow } from "@mui/material/colors";
@@ -70,6 +70,8 @@ function ParticipantSummary({userName, userColor}) {
 function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
     const [open, setOpen] = useState(false);
     const [newColor, setNewColor] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertType, setAlertType] = useState('default'); 
 
     const handleClose = () => {
       setOpen(false);
@@ -79,14 +81,26 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
       setOpen(true);
     };
 
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlertOpen(false);
+    };
 
     const handleSubmit = () => {
         setOpen(false);
 
-
         // check for new name/color        
         const modifiedUser = room.participants.find((user) => user.user_id === dbUser.user_id);
         const newName = document.getElementById('new-name').value;
+        
+        if (newName === '' && newColor === ''){
+            setAlertType("info");
+            setAlertOpen(true);  
+            return;
+        }
+
         if (newName !== '') {
             modifiedUser.name = newName;
         }
@@ -111,15 +125,54 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
         .then(response => {
             console.log(response);
             setRoom(updatedRoom);
+
+            setNewColor('');
+            setAlertType("success");
+            setAlertOpen(true);    
         })
         .catch(error => {
             console.error(error);
+            
+            setNewColor('');
+            setAlertType("error");
+            setAlertOpen(true);
         })
 
     };
 
     const handleChange = (event) => {
         setNewColor(event.target.value)
+    };
+
+    const displayAlert = (alertType) => {
+        if (alertType === "success") {
+            return ( 
+                <Alert onClose={handleAlertClose} severity="success" variant="filled">
+                    Details changed successfully
+                </Alert>        
+            )
+        }
+        else if (alertType === "info") {
+            return ( 
+                <Alert onClose={handleAlertClose} severity="info" variant="filled">
+                    No changes made
+                </Alert>
+            ) 
+        }
+        else if (alertType === "error") {
+            return ( 
+                <Alert onClose={handleAlertClose} severity="error" variant="filled">
+                    Error making changes, try again
+                </Alert>
+            )    
+        }
+        else {
+            return (
+                <Alert onClose={handleAlertClose} severity="warning" variant="filled">
+                    Unknown alert type "{alertType}"
+                </Alert>                
+            )
+        }
     };
 
     return (
@@ -216,6 +269,14 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
                     </Stack>
                 </Paper>
             </Backdrop>
+            <Snackbar 
+                // anchorOrigin={{vertical: 'top', horizontal: 'center'}} 
+                open ={alertType !== null && alertOpen} 
+                autoHideDuration={6000}
+                onClose={handleAlertClose}
+            >
+                {displayAlert(alertType)}
+            </Snackbar>                    
         </Box>
     )
 }
@@ -273,7 +334,7 @@ export default function ParticipantDetails({room, setRoom, dbUser, setDbUser}){
                     dbUser={dbUser}
                     setDbUser={setDbUser}
                     hexToPalette={hexToPalette}
-                />                    
+                />
             </Stack>
         </Box>
     )

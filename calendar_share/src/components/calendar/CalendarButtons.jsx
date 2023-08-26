@@ -1,10 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { Button, Stack } from "@mui/material";
+import { Alert, Button, Snackbar, Stack } from "@mui/material";
 import { Clear, CloudDownload, Sync } from "@mui/icons-material";
 
 export default function CalendarButtons({dayList, setDayList, stableList, setStableList, room_id, room, setRoom, dbUser, setDbUser, palette}){
-  
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertType, setAlertType] = useState('default'); 
+
+  const displayAlert = (alertType) => {
+    if (alertType === "success") {
+      return ( 
+        <Alert onClose={handleAlertClose} severity="success" variant="filled">
+          Calendar saved successfully
+        </Alert>        
+      )
+    }
+    else if (alertType === "info") {
+      return ( 
+        <Alert onClose={handleAlertClose} severity="info" variant="filled">
+          No changes made to calendar
+        </Alert>
+      ) 
+    }
+    else if (alertType === "error") {
+      return ( 
+        <Alert onClose={handleAlertClose} severity="error" variant="filled">
+          Error saving calendar, try again
+        </Alert>
+      )    
+    }
+    else {
+      return (
+        <Alert onClose={handleAlertClose} severity="warning" variant="filled">
+          Unknown alert type "{alertType}"
+        </Alert>                
+      )
+    }
+  };
+
   const handleClear = () => {
     console.log('Clearing calendar: ');
     console.log(dayList);
@@ -20,6 +53,13 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
       return;
     }
   
+    if (dayList === stableList) {
+      setAlertType('info');
+      setAlertOpen(true);
+      return;
+    }
+
+
     // SAVE SELECTED DAYS TO ROOM DB
     console.log(`updating room ${room_id}`);
     console.log(room);
@@ -56,9 +96,13 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
         setStableList(dayList);
         setRoom(updatedRoom);
 
+        setAlertType('success');
+        setAlertOpen(true)    
       })
       .catch(error => {
         console.error(error);
+        setAlertType('error');
+        setAlertOpen(true)    
       });
   };
 
@@ -68,6 +112,12 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
     setDayList(stableList);
   };
 
+  const handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+        return;
+    }
+    setAlertOpen(false);
+  };
 
   return(
     <Stack direction="row" spacing={2} justifyContent="center">
@@ -94,6 +144,14 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
       >
         Restore Calendar
       </Button>  
+      <Snackbar 
+        // anchorOrigin={{vertical: 'top', horizontal: 'center'}} 
+        open ={alertType !== null && alertOpen} 
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        {displayAlert(alertType)}
+      </Snackbar>                    
     </Stack>
   );
 }
