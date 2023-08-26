@@ -197,7 +197,7 @@ export default function CalendarPage(){
                     width='24%'
                     boxShadow={1}
                 >
-                    {dbUser && room && 
+                    {dbUser && room && room.participants.some(user => user.user_id === dbUser.user_id) &&
                         <ParticipantDetails 
                             room={room} 
                             setRoom={setRoom}

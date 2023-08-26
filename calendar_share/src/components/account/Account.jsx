@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { useAuth } from '../firebase/authContext';
 import { Avatar, AvatarGroup, Box, Container, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Tooltip } from '@mui/material';
-import { CalendarMonth, Check, Delete, Edit } from '@mui/icons-material';
+import { CalendarMonth, Check, Delete, Edit, ExitToApp } from '@mui/icons-material';
 import theme from '../theme';
 import axios from "axios";
 
@@ -60,7 +60,7 @@ function UserDetails(props) {
       alignItems='center'
       ml={2}
     >
-      <Box width='35%'>
+      <Box minWidth='35%'>
         <Typography variant="h4" align='center' gutterBottom pt='75px'>
           User Details
         </Typography>
@@ -207,7 +207,7 @@ function PreviousCalendarList(props) {
   );
 }
 
-function CalendarHistory({rooms, setRooms}) {
+function CalendarHistory({dbUser, rooms, setRooms}) {
   
   const handleDeleteRoom = (room_id) => {
 
@@ -222,11 +222,44 @@ function CalendarHistory({rooms, setRooms}) {
 
   };
 
+  const handleLeaveRoom = (room) => {
+    // remove room from user's list
+    const updatedUser = {
+      ...dbUser,
+      rooms: dbUser.rooms.filter(userRoom => userRoom.room_id !== room.room_id)
+    }
+
+    axios.patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+    .then(response => {
+      console.log(response);
+      setRooms((prevRooms) => prevRooms.filter(userRoom => userRoom.room_id !== room.room_id))
+    })
+    .catch(error => {
+      console.error(error);
+    })
+
+
+    // remove user from room's list
+    const updatedRoom = {
+      ...room,
+      participants: room.participants.filter(roomUser => roomUser.user_id !== dbUser.user_id)
+    }
+
+    axios.patch(`http://localhost:5050/rooms/${room.room_id}`, updatedRoom)
+    .then(response => {
+      console.log(response);
+    })
+    .catch(error => {
+      console.error(error);
+    })
+
+  };
+
   return (
     <Box 
       sx={{ 
         // boxShadow: 1, 
-        width: '55%', 
+        minWidth: '55%', 
         bgcolor: 'background.paper',
         alignSelf: 'center' 
       }}
@@ -243,9 +276,15 @@ function CalendarHistory({rooms, setRooms}) {
           <ListItem 
             key={room.room_id}
             secondaryAction={
-              <IconButton onClick={() => handleDeleteRoom(room.room_id)} >
-                <Delete />
-              </IconButton>
+              (dbUser.user_id === room.host_id) ? (
+                <IconButton onClick={() => handleDeleteRoom(room.room_id)} >
+                  <Delete />
+                </IconButton>
+              ) : (
+                <IconButton onClick={() => handleLeaveRoom(room)} >
+                  <ExitToApp />
+                </IconButton>
+              )
             }  
           >
             <ListItemButton href={`/calendar/${room.room_id}`}>
@@ -289,6 +328,7 @@ function CalendarHistory({rooms, setRooms}) {
 function AccountPage() {
   const { dbUser, setDbUser, rooms, setRooms } = useAuth();  
 
+  console.log(rooms)
   const exampleList = [
     { id: 1, name: 'School' },
     { id: 2, name: 'Vacation' },
@@ -327,13 +367,14 @@ function AccountPage() {
               <Divider 
                 orientation='horizontal' 
                 flexItem 
-                sx={{width: '55%',
+                sx={{
+                  minWidth: '55%',
                   alignSelf:'center'
                 }}
               />
               
               {dbUser && rooms &&
-              <CalendarHistory rooms={rooms} setRooms={setRooms} />}
+              <CalendarHistory dbUser={dbUser} rooms={rooms} setRooms={setRooms} />}
 
               {!dbUser &&  
               <PreviousCalendarList list={exampleList} />}
