@@ -50,6 +50,20 @@ export default function CalendarPage(){
     const [stableList, setStableList] = useState([]);
     const [highlighted, setHighlighted] = useState([]);
 
+    const [width, setWidth] = useState(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
 
     useEffect(() => {
         if (!room_id){
@@ -171,78 +185,129 @@ export default function CalendarPage(){
 
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'row',
-            }}
-        >   
+        (!isMobile) ? (
             <Box
-                pt='150px'
-                width='24%'
-                boxShadow={1}
-            >
-                {dbUser && room && 
-                    <ParticipantDetails 
-                        room={room} 
-                        setRoom={setRoom}
-                        dbUser={dbUser}
-                        setDbUser={setDbUser}
-                    />
-                }        
-            </Box>
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                }}
+            >   
+                <Box
+                    pt='150px'
+                    width='24%'
+                    boxShadow={1}
+                >
+                    {dbUser && room && 
+                        <ParticipantDetails 
+                            room={room} 
+                            setRoom={setRoom}
+                            dbUser={dbUser}
+                            setDbUser={setDbUser}
+                        />
+                    }        
+                </Box>
 
-            <Box
-                pt='70px'
-                width='50%'
-                boxShadow={1}
-            >
-                {room && <CalendarTitle room={room} />}
-                
-                <Calendar 
-                    room={room}
-                    setRoom={setRoom}
-                    room_id={room_id}
-                    dbUser={dbUser}
-                    setDbUser={setDbUser}
-                    dayList={dayList}
-                    setDayList={setDayList}
-                    stableList={stableList}
-                    setStableList={setStableList}
-                    highlighted={highlighted}
-                />
-                
-                {dbUser && room &&
-                    <CalendarButtons 
-                        dayList={dayList} 
-                        setDayList={setDayList} 
-                        stableList={stableList} 
-                        setStableList={setStableList} 
-                        room_id={room_id}  
+                <Box
+                    pt='70px'
+                    width='50%'
+                    boxShadow={1}
+                >
+                    {room && <CalendarTitle room={room} />}
+                    
+                    <Calendar 
                         room={room}
-                        setRoom={setRoom} 
+                        setRoom={setRoom}
+                        room_id={room_id}
                         dbUser={dbUser}
                         setDbUser={setDbUser}
-                        palette={palette}
-                    /> 
-                }
-                
-                
-
+                        dayList={dayList}
+                        setDayList={setDayList}
+                        stableList={stableList}
+                        setStableList={setStableList}
+                        highlighted={highlighted}
+                    />
+                    
+                    {dbUser && room &&
+                        <CalendarButtons 
+                            dayList={dayList} 
+                            setDayList={setDayList} 
+                            stableList={stableList} 
+                            setStableList={setStableList} 
+                            room_id={room_id}  
+                            room={room}
+                            setRoom={setRoom} 
+                            dbUser={dbUser}
+                            setDbUser={setDbUser}
+                            palette={palette}
+                        /> 
+                    }
+                </Box>
+                <Box
+                    pt='150px'
+                    width='26%'
+                    boxShadow={1}
+                >
+                    {room && 
+                        <UserLists 
+                            className='user_lists' 
+                            users={room.participants} 
+                            highlighted={highlighted} 
+                            setHighlighted={setHighlighted}  
+                        />}
+                </Box>
             </Box>
+        ) : (
             <Box
-                pt='150px'
-                width='26%'
-                boxShadow={1}
-            >
-                {room && 
-                    <UserLists 
-                        className='user_lists' 
-                        users={room.participants} 
-                        highlighted={highlighted} 
-                        setHighlighted={setHighlighted}  
-                    />}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >   
+                <Box
+                    pt='70px'
+                >
+                    {room && <CalendarTitle room={room} />}
+                    
+                    <Calendar 
+                        room={room}
+                        setRoom={setRoom}
+                        room_id={room_id}
+                        dbUser={dbUser}
+                        setDbUser={setDbUser}
+                        dayList={dayList}
+                        setDayList={setDayList}
+                        stableList={stableList}
+                        setStableList={setStableList}
+                        highlighted={highlighted}
+                    />
+                    
+                    {dbUser && room &&
+                        <CalendarButtons 
+                            dayList={dayList} 
+                            setDayList={setDayList} 
+                            stableList={stableList} 
+                            setStableList={setStableList} 
+                            room_id={room_id}  
+                            room={room}
+                            setRoom={setRoom} 
+                            dbUser={dbUser}
+                            setDbUser={setDbUser}
+                            palette={palette}
+                        /> 
+                    }
+                </Box>
+                <Box
+                    pt={2}
+                >
+                    {room && 
+                        <UserLists 
+                            className='user_lists' 
+                            users={room.participants} 
+                            highlighted={highlighted} 
+                            setHighlighted={setHighlighted}  
+                        />}
+                </Box>
             </Box>
-        </Box>
+        )
     );
 }
