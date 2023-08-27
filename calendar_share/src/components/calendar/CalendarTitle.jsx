@@ -128,7 +128,7 @@ export default function CalendarTitle({room}) {
             <Box textAlign='center'>
               <Tooltip title="Copy Room ID to Clipboard" placement="right">
 
-                <Button onClick={navigator.clipboard.writeText(`${room.room_id}`)} variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
+                <Button onClick={() => navigator.clipboard.writeText(`${room.room_id}`)} variant='text' size='large' endIcon={<ContentCopy fontSize='small' />} >
                   Room ID: #{room.room_id}
                 </Button>
               </Tooltip>
