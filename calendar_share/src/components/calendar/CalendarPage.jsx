@@ -10,6 +10,7 @@ import CalendarTitle from "./CalendarTitle";
 import UserLists from "./UserLists";
 import CalendarButtons from "./CalendarButtons";
 import ParticipantDetails from "./RoomProfile";
+import MobileSpeedDial from "./MobileSpeedDial";
 
 
 export const palette = [
@@ -280,24 +281,9 @@ export default function CalendarPage(){
                         setStableList={setStableList}
                         highlighted={highlighted}
                     />
-                    
-                    {dbUser && room &&
-                        <CalendarButtons 
-                            dayList={dayList} 
-                            setDayList={setDayList} 
-                            stableList={stableList} 
-                            setStableList={setStableList} 
-                            room_id={room_id}  
-                            room={room}
-                            setRoom={setRoom} 
-                            dbUser={dbUser}
-                            setDbUser={setDbUser}
-                            palette={palette}
-                        /> 
-                    }
                 </Box>
                 <Box
-                    pt={2}
+                    // pt={2}
                 >
                     {room && 
                         <UserLists 
@@ -305,8 +291,25 @@ export default function CalendarPage(){
                             users={room.participants} 
                             highlighted={highlighted} 
                             setHighlighted={setHighlighted}  
-                        />}
+                        />
+                    }
                 </Box>
+
+
+            {dbUser && room && room.participants.some(user => user.user_id === dbUser.user_id) &&
+                <MobileSpeedDial 
+                    dayList={dayList} 
+                    setDayList={setDayList} 
+                    stableList={stableList} 
+                    setStableList={setStableList} 
+                    room_id={room_id}  
+                    room={room}
+                    setRoom={setRoom} 
+                    dbUser={dbUser}
+                    setDbUser={setDbUser}
+                    palette={palette}
+                />
+            }
             </Box>
         )
     );
