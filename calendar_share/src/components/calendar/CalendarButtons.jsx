@@ -3,6 +3,8 @@ import axios from "axios";
 import { Alert, Button, Snackbar, Stack } from "@mui/material";
 import { Clear, CloudDownload, Sync } from "@mui/icons-material";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
+
 export default function CalendarButtons({dayList, setDayList, stableList, setStableList, room_id, room, setRoom, dbUser, setDbUser, palette}){
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertType, setAlertType] = useState('default'); 
@@ -89,7 +91,7 @@ export default function CalendarButtons({dayList, setDayList, stableList, setSta
     console.log(updatedRoom);
 
     axios
-      .patch(`http://localhost:5050/rooms/${room_id}`, updatedRoom)
+      .patch(`${apiUrl}/rooms/${room_id}`, updatedRoom)
       .then(response => {
         // Update the local state with the updated room
         console.log(response);

@@ -4,6 +4,8 @@ import { Box, Button, IconButton, TextField, Tooltip, } from "@mui/material";
 import { Check, ContentCopy, Edit, } from "@mui/icons-material";
 import axios from "axios";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
+
 export default function CalendarTitle({room}) {
     const { dbUser, rooms, setRooms } = useAuth();
     const [editingTitle, setEditingTitle] = useState(false);
@@ -24,7 +26,7 @@ export default function CalendarTitle({room}) {
         // update room in DATABASE, and update LOCAL COPY of rooms
         const updatedRoom = { ...room, title: newTitle };
 
-        axios.patch(`http://localhost:5050/rooms/${room.room_id}`, updatedRoom)
+        axios.patch(`${apiUrl}/rooms/${room.room_id}`, updatedRoom)
             .then(result => {
                 console.log(result);
                 setEditingTitle(false);

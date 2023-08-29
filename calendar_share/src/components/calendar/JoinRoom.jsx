@@ -3,6 +3,8 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
+
 export default function JoinRoom() {
     const [roomID, setRoomID] = useState(""); 
     const [incorrectFormat, setIncorrectFormat] = useState(false); 
@@ -13,7 +15,7 @@ export default function JoinRoom() {
         const room_id = roomID.toUpperCase();
         console.log(`Joining room ${room_id}`);
 
-        axios.get(`http://localhost:5050/rooms/${room_id}`)
+        axios.get(`${apiUrl}/rooms/${room_id}`)
             .then(response => {
                 if (response.data === "Not found"){
                     console.warn("Room doesn't exist!");

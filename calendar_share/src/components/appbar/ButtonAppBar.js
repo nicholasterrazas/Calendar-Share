@@ -16,6 +16,8 @@ import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from '@mui
 import MenuIcon from '@mui/icons-material/Menu';
 import { palette } from '../calendar/CalendarPage';
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
+
 export default function MenuAppBar() {
   const { currentUser, setDbUser, dbUser, rooms, setRooms } = useAuth();
   const [auth, setAuth] = React.useState(currentUser !== null);
@@ -34,7 +36,7 @@ export default function MenuAppBar() {
   React.useEffect(() => {
     const getUserData = () => {
       console.log('retrieving user: ' + currentUser.uid );
-      axios.get(`http://localhost:5050/users/${currentUser.uid}`)
+      axios.get(`${apiUrl}/users/${currentUser.uid}`)
         .then(response => {
           // console.log(response);
           setDbUser(response.data);
@@ -54,7 +56,7 @@ export default function MenuAppBar() {
   React.useEffect(() => {
     // Retrieve user's rooms
     if (dbUser){
-      axios.get(`http://localhost:5050/users/${dbUser.user_id}/rooms`)
+      axios.get(`${apiUrl}/users/${dbUser.user_id}/rooms`)
         .then(response=> {
           // console.log(response);
           setRooms(response.data);
@@ -95,7 +97,7 @@ export default function MenuAppBar() {
     }
 
     axios
-    .post('http://localhost:5050/rooms', room)
+    .post(`${apiUrl}/rooms`, room)
     .then((response) => {
       console.log(response);
       const room_id = response.data.room_id;
@@ -108,7 +110,7 @@ export default function MenuAppBar() {
       
       const updatedUser = { ...dbUser, rooms: newRooms };
       
-      axios.patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+      axios.patch(`${apiUrl}/users/${dbUser.user_id}`, updatedUser)
       .then((response) => {
         // console.log(response);
         setDbUser(updatedUser);
@@ -132,7 +134,7 @@ export default function MenuAppBar() {
   // Check if the user exists
   const checkUserExists = (uid) => {
     console.log('checking user with uid: ' + uid);
-    return axios.get(`http://localhost:5050/users/${uid}`)
+    return axios.get(`${apiUrl}/users/${uid}`)
       .then(response => {
         console.log(response);
         const exists = Boolean(response.data !== 'Not found');
@@ -156,7 +158,7 @@ export default function MenuAppBar() {
     }
     console.log(db_user);
   
-    return axios.post('http://localhost:5050/users', db_user)
+    return axios.post(`${apiUrl}/users`, db_user)
       .catch(error => {
         console.error(error);
       });

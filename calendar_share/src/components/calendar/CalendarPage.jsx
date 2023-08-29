@@ -12,6 +12,7 @@ import CalendarButtons from "./CalendarButtons";
 import ParticipantDetails from "./RoomProfile";
 import MobileSpeedDial from "./MobileSpeedDial";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
 
 export const palette = [
 
@@ -73,7 +74,7 @@ export default function CalendarPage(){
         }
         console.log(`retrieving room: ${room_id}`)
         // fetch room document from backend API
-        axios.get(`http://localhost:5050/rooms/${room_id}`)
+        axios.get(`${apiUrl}/rooms/${room_id}`)
         .then(response => {
         // set room state to room document
         if (response.data === 'Invalid Room ID'){
@@ -133,7 +134,7 @@ export default function CalendarPage(){
           };
     
           axios
-            .patch(`http://localhost:5050/rooms/${room_id}`, updatedRoom)
+            .patch(`${apiUrl}/rooms/${room_id}`, updatedRoom)
             .then((response) => {
               console.log(response);
               setRoom(updatedRoom);
@@ -144,7 +145,7 @@ export default function CalendarPage(){
               const updatedUser = { ...dbUser, rooms: guestRooms };
     
               axios
-                .patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+                .patch(`${apiUrl}/users/${dbUser.user_id}`, updatedUser)
                 .then((response) => {
                   console.log(response);
                   setDbUser(updatedUser);

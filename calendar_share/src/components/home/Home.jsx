@@ -5,6 +5,8 @@ import { useAuth } from '../firebase/authContext';
 import axios from "axios";
 import { palette } from '../calendar/CalendarPage';
 
+const apiUrl = process.env.API_URL || "http://localhost:5050";
+
 const Home = () => {
   const { dbUser, setDbUser } = useAuth();  
   const navigate = useNavigate();
@@ -32,7 +34,7 @@ const Home = () => {
     }
 
     axios
-    .post('http://localhost:5050/rooms', room)
+    .post(`${apiUrl}/rooms`, room)
     .then((response) => {
       console.log(response);
       const room_id = response.data.room_id;
@@ -45,7 +47,7 @@ const Home = () => {
       
       const updatedUser = { ...dbUser, rooms: newRooms };
       
-      axios.patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+      axios.patch(`${apiUrl}/users/${dbUser.user_id}`, updatedUser)
       .then((response) => {
         // console.log(response);
         setDbUser(updatedUser);
