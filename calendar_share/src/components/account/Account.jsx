@@ -7,6 +7,7 @@ import { CalendarMonth, Check, Delete, Edit, ExitToApp } from '@mui/icons-materi
 import theme from '../theme';
 import axios from "axios";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
 
 function UserDetails(props) {
   const { dbUser, setDbUser } = props;
@@ -35,7 +36,7 @@ function UserDetails(props) {
     // TODO: update each user's name within the rooms as well
 
     axios
-      .patch(`http://localhost:5050/users/${dbUser.user_id}`,updatedUser )
+      .patch(`${apiUrl}/users/${dbUser.user_id}`,updatedUser )
       .then((response) => {
         console.log(response);
         setDbUser(updatedUser);
@@ -211,7 +212,7 @@ function CalendarHistory({dbUser, rooms, setRooms}) {
   
   const handleDeleteRoom = (room_id) => {
 
-    axios.delete(`http://localhost:5050/rooms/${room_id}`)
+    axios.delete(`${apiUrl}/rooms/${room_id}`)
     .then(response => {
       console.log(response)
       setRooms((prevRooms) => prevRooms.filter((room) => room.room_id !== room_id))
@@ -229,7 +230,7 @@ function CalendarHistory({dbUser, rooms, setRooms}) {
       rooms: dbUser.rooms.filter(userRoom => userRoom.room_id !== room.room_id)
     }
 
-    axios.patch(`http://localhost:5050/users/${dbUser.user_id}`, updatedUser)
+    axios.patch(`${apiUrl}/users/${dbUser.user_id}`, updatedUser)
     .then(response => {
       console.log(response);
       setRooms((prevRooms) => prevRooms.filter(userRoom => userRoom.room_id !== room.room_id))
@@ -245,7 +246,7 @@ function CalendarHistory({dbUser, rooms, setRooms}) {
       participants: room.participants.filter(roomUser => roomUser.user_id !== dbUser.user_id)
     }
 
-    axios.patch(`http://localhost:5050/rooms/${room.room_id}`, updatedRoom)
+    axios.patch(`${apiUrl}/rooms/${room.room_id}`, updatedRoom)
     .then(response => {
       console.log(response);
     })
@@ -376,8 +377,8 @@ function AccountPage() {
               {dbUser && rooms &&
               <CalendarHistory dbUser={dbUser} rooms={rooms} setRooms={setRooms} />}
 
-              {!dbUser &&  
-              <PreviousCalendarList list={exampleList} />}
+              {/* {!dbUser &&  
+              <PreviousCalendarList list={exampleList} />} */}
             </Stack>
         </Container>
       </Box>

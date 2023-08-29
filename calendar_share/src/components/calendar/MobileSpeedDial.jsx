@@ -4,6 +4,8 @@ import { Alert, Backdrop, Box, Button, FormControl, InputLabel, MenuItem, Paper,
 import axios from "axios";
 import { blue, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightGreen, orange, pink, red, yellow } from "@mui/material/colors";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
+
 const palette = [
 
     // Base Colors
@@ -175,7 +177,7 @@ export default function MobileSpeedDial ({
         console.log(updatedRoom);
     
         axios
-          .patch(`http://localhost:5050/rooms/${room_id}`, updatedRoom)
+          .patch(`${apiUrl}/rooms/${room_id}`, updatedRoom)
           .then(response => {
             // Update the local state with the updated room
             console.log(response);
@@ -226,7 +228,7 @@ export default function MobileSpeedDial ({
         console.log(updatedRoom);
 
         // send updated room to DB
-        axios.patch(`http://localhost:5050/rooms/${room.room_id}`, updatedRoom)
+        axios.patch(`${apiUrl}/rooms/${room.room_id}`, updatedRoom)
         .then(response => {
             console.log(response);
             setRoom(updatedRoom);

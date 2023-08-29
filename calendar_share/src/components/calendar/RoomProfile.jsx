@@ -3,6 +3,8 @@ import React, { useState } from "react"
 import axios from "axios";
 import { blue, brown, cyan, deepOrange, deepPurple, green, grey, indigo, lightGreen, orange, pink, red, yellow } from "@mui/material/colors";
 
+const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
+
 const palette = [
 
     // Base Colors
@@ -121,7 +123,7 @@ function ModifyParticipantButton({dbUser, room, setRoom, hexToPalette}) {
         console.log(updatedRoom);
 
         // send updated room to DB
-        axios.patch(`http://localhost:5050/rooms/${room.room_id}`, updatedRoom)
+        axios.patch(`${apiUrl}/rooms/${room.room_id}`, updatedRoom)
         .then(response => {
             console.log(response);
             setRoom(updatedRoom);
