@@ -227,7 +227,7 @@ function CalendarHistory({dbUser, rooms, setRooms}) {
     // remove room from user's list
     const updatedUser = {
       ...dbUser,
-      rooms: dbUser.rooms.filter(userRoom => userRoom.room_id !== room.room_id)
+      rooms: dbUser.rooms.filter(roomId => roomId !== room.room_id)
     }
 
     axios.patch(`${apiUrl}/users/${dbUser.user_id}`, updatedUser)
