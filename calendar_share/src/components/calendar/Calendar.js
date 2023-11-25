@@ -32,7 +32,6 @@ const CustomPickersDay = styled(PickersDay, {
 function Day(props) {
   const { day, selectedDay, dayList, isMouseDown, toggleDays, room, dbUser, highlighted, ...other } = props;
   
-
   const dayIsSelected = dayList.some((d) => day.isSame(d, 'day'));
   
   function isHighlighted(user) {
@@ -66,7 +65,7 @@ function Day(props) {
         }
       }
       else {
-        if (isHighlighted(user) && user.selected_days.includes(dayjs(day).format('YYYY-MM-DDT04:00:00.000[Z]'))) {
+        if (isHighlighted(user) && user.selected_days.includes(dayjs(day).format('YYYY-MM-DDT05:00:00.000[Z]'))) {
         
           const color = user.color || '#607d8b';  
           colorBlock = `${color} ${startPercentage}, ${color} ${endPercentage}`;
