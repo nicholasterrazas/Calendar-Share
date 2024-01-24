@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import axios from "axios";
+import { useAuth } from '../firebase/authContext';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import { useAuth } from '../firebase/authContext';
 import { Avatar, AvatarGroup, Box, Container, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Tooltip } from '@mui/material';
 import { CalendarMonth, Check, Delete, Edit, ExitToApp } from '@mui/icons-material';
 import theme from '../theme';
-import axios from "axios";
 
 const apiUrl = "https://calendar-share-ad4162ab16ec.herokuapp.com";
 
@@ -243,7 +243,7 @@ function CalendarHistory({dbUser, rooms, setRooms}) {
 }
 
 
-function AccountPage() {
+export default function AccountPage() {
   const { dbUser, setDbUser, rooms, setRooms } = useAuth();  
 
   console.log(rooms)
@@ -265,17 +265,11 @@ function AccountPage() {
               spacing={3} 
               justifyContent='center'
             >
-              {dbUser && 
+              
               <UserDetails 
                 dbUser={dbUser}
                 setDbUser={setDbUser}
-              />}
-
-              {!dbUser &&
-              <UserDetails
-                dbUser={null}
-                setDbUser={null}
-              />}
+              />
 
               <Divider 
                 orientation='horizontal' 
@@ -295,5 +289,3 @@ function AccountPage() {
     </div>
   );
 }
-
-export default AccountPage;
