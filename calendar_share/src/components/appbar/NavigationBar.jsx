@@ -3,7 +3,7 @@ import axios from "axios";
 import { GoogleAuthProvider, getAuth, signInWithPopup, signOut } from "firebase/auth";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AppBar, Avatar, Box, Button, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
-import { AccountBoxSharp, Add, CalendarMonth, Group, Home, TurnLeft } from "@mui/icons-material";
+import { AccountBoxSharp, Add, Group, Home, TurnLeft } from "@mui/icons-material";
 import MenuIcon from '@mui/icons-material/Menu';
 import theme from "../theme";
 import { useAuth } from "../firebase/authContext";
@@ -99,15 +99,6 @@ function MainPages () {
             <Home/>
           </ListItemIcon>
           <ListItemText primary='Home' />
-        </ListItemButton>
-      </ListItem>
-
-      <ListItem key='calendar' disablePadding>
-        <ListItemButton href='/calendar'>
-          <ListItemIcon>
-            <CalendarMonth />
-          </ListItemIcon>
-          <ListItemText primary='Calendar' />
         </ListItemButton>
       </ListItem>
 
